@@ -12,9 +12,11 @@ fun main() {
         println("0 - Quick Battle")
         println("1 - Custom Battle")
         println("2 - Trainer Editor")
-        val choice = readln().toInt()
-        when (choice){
-            0 -> quickBattle(TrainerClass("QUICKPLAY"))
+        println("3 - Stress Test")
+        println("4 - Multiplayer")
+        val choice: String = readLine() ?: "0"
+        when (choice.toInt()){
+            0 -> quickBattle(TrainerClass("QUICKPLAY",false))
             1 -> {
             if (trainerData.isEmpty() || currentTrainer.trainerName == "DEFAULT"){
                 println("You need to make a trainer first...")
@@ -23,6 +25,14 @@ fun main() {
             }
         }
             2 -> TODO()
+            3 -> stressTest()
+            4 -> {
+                println("Player 1 Name: ")
+                val trainerName = readln()
+                println("Player 2 Name: ")
+                val trainerName2 = readln()
+                multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false))
+            }
         }
     }
     fun listTrainer(){
@@ -35,27 +45,61 @@ fun main() {
         }
     }
 }
+
+fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
+    println("+---MULTIPLAYER BATTLE---+")
+    println("${trainer1.trainerName} vs. ${trainer2.trainerName}")
+    println("How many VS. Pokemon?")
+    val opponentNum = readln().toInt()
+    trainer1.generatePokemon(opponentNum,4,true)
+    trainer2.generatePokemon(opponentNum,4,true)
+    println("${trainer1.trainerName} has: ")
+    trainer1.listPokemon()
+    Thread.sleep(5000)
+    println("${trainer2.trainerName} has: ")
+    trainer2.listPokemon()
+    Thread.sleep(5000)
+    val battleHandler = BattleHandler()
+    battleHandler.battleMain(trainer1,trainer2)
+    println("+---MULTIPLAYER BATTLE END---+")
+    return
+}
 fun quickBattle(trainer: TrainerClass){
-    println("+-------------+")
     println("+---QUICK BATTLE---+")
-    println("+-------------+")
     println("${trainer.trainerName} vs. Rival")
     println("How many VS. Pokemon?")
     val opponentNum = readln().toInt()
-    val rival = TrainerClass("Rival")
+    val rival = TrainerClass("Rival", true)
     trainer.generatePokemon(opponentNum,4,true)
     rival.generatePokemon(opponentNum,4,true)
     println("Rival has: ")
     rival.listPokemon()
-    println("+-------------+")
+    Thread.sleep(5000)
     val battleHandler = BattleHandler()
     battleHandler.battleMain(trainer,rival)
-    println("+-------------+")
     println("+---QUICK BATTLE END---+")
-    println("+-------------+")
     return
 }
 
+fun stressTest(){
+    println("+-------------+")
+    println("+---STRESS TEST---+")
+    println("+-------------+")
+    val neverEnding = false
+    var count = 0
+    while (!neverEnding){
+        println("+-------EPOCH $count------+")
+        Thread.sleep(1000)
+        val trainer1 = TrainerClass("TEST1", true)
+        val trainer2 = TrainerClass("TEST2", true)
+        trainer1.generatePokemon(6,4,false)
+        trainer2.generatePokemon(6,4,false)
+        val battleHandler = BattleHandler()
+        battleHandler.battleMain(trainer1,trainer2)
+        count++
+    }
+
+}
 class TrainerList<TrainerClass>(vararg trainer: TrainerClass){
 
     private val elements = trainer.toMutableList()
