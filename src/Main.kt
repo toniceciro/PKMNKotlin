@@ -12,8 +12,8 @@ fun main() {
         println("0 - Quick Battle")
         println("1 - Custom Battle")
         println("2 - Trainer Editor")
-        val choice = readln().toInt()
-        when (choice){
+        val choice: String = readLine() ?: "0"
+        when (choice.toInt()){
             0 -> quickBattle(TrainerClass("QUICKPLAY"))
             1 -> {
             if (trainerData.isEmpty() || currentTrainer.trainerName == "DEFAULT"){
