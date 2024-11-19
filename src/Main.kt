@@ -101,7 +101,6 @@ fun stressTest(turnCounts:Int){
     var count = 0
     while (count < turnCounts){
         println("+-------EPOCH $count------+")
-        Thread.sleep(1000)
         val trainer1 = TrainerClass("TEST1", true)
         val trainer2 = TrainerClass("TEST2", true)
         trainer1.generatePokemon(6,4,false)
