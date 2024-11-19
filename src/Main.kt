@@ -25,7 +25,7 @@ fun main() {
             }
         }
             2 -> TODO()
-            3 -> stressTest()
+            3 -> stressTest(readln().toInt())
             4 -> {
                 println("Player 1 Name: ")
                 val trainerName = readln()
@@ -81,13 +81,12 @@ fun quickBattle(trainer: TrainerClass){
     return
 }
 
-fun stressTest(){
+fun stressTest(turnCounts:Int){
     println("+-------------+")
     println("+---STRESS TEST---+")
     println("+-------------+")
-    val neverEnding = false
     var count = 0
-    while (!neverEnding){
+    while (count < turnCounts){
         println("+-------EPOCH $count------+")
         Thread.sleep(1000)
         val trainer1 = TrainerClass("TEST1", true)
@@ -98,7 +97,6 @@ fun stressTest(){
         battleHandler.battleMain(trainer1,trainer2)
         count++
     }
-
 }
 class TrainerList<TrainerClass>(vararg trainer: TrainerClass){
 

@@ -1,6 +1,8 @@
+private val battleSpeed: Long = 1000
+
 class BattleHandler {
 
-    fun battleMain(player:TrainerClass, player2:TrainerClass, battleSpeed: Long = 500){
+    fun battleMain(player:TrainerClass, player2:TrainerClass){
         var isBattleFinished = false
         var turnCount = 0
         println("+--------------------+")
@@ -40,8 +42,6 @@ class BattleHandler {
                 //Check if opponent switch pokemon
                 opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
                 println("+---Turn ${turnCount}---+")
-                println("Opponent ${player2.currentPokemon.getPokemon(opponentChoice.currentPokemonIndex).pokemonName} (LV ${player2.currentPokemon.getPokemon(opponentChoice.currentPokemonIndex).getLevel()}): ${player2.currentPokemon.getPokemon(opponentChoice.currentPokemonIndex).checkHP().currentHP} / ${player2.currentPokemon.getPokemon(opponentChoice.currentPokemonIndex).checkHP().maxHP}")
-                println("+-----------------------+")
                 mainFightHandler(player,player2,playerChoice,opponentChoice)
                 Thread.sleep(battleSpeed)
                 turnCount++
@@ -123,31 +123,31 @@ class BattleHandler {
         sourceChoice.chosenMove?.removePP()
         println("${sourcePokemon.pokemonName} used ${sourceChoice.chosenMove?.getName()}!")
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
-        Thread.sleep(100)
+        Thread.sleep(battleSpeed)
         when{
             battleResult.effectiveVal > 1.0F -> {
                 println("It's super effective!")
-                Thread.sleep(100)
+                Thread.sleep(battleSpeed)
             }
             battleResult.effectiveVal < 1.0F -> {
                 println("It's not very effective...")
-                Thread.sleep(100)
+                Thread.sleep(battleSpeed)
             }
         }
 
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
             println("Critical hit!")
-            Thread.sleep(100)
+            Thread.sleep(battleSpeed)
         }
 
         when (battleResult.damageAmount <= 0){
             false -> {
                 println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.pokemonName}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
-                Thread.sleep(100)
+                Thread.sleep(battleSpeed)
             }
             true -> {
                 println("${sourcePokemon.pokemonName}'s attack missed!")
-                Thread.sleep(100)
+                Thread.sleep(battleSpeed)
             }
         }
 
@@ -158,7 +158,7 @@ class BattleHandler {
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
             println("${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName}!")
-            Thread.sleep(100)
+            Thread.sleep(battleSpeed)
             return playerChoice
         }
         return playerChoice
@@ -174,10 +174,10 @@ class BattleHandler {
         }
     }
     private fun playerHandler(trainerData: TrainerClass, playerChoice: playerChoiceData): playerChoiceData{
-         val pokemonIndex = playerChoice.currentPokemonIndex
+        val pokemonIndex = playerChoice.currentPokemonIndex
         println("+--------------------+")
-        println("What will ${trainerData.trainerName} do?")
-         println("${trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonName}: ${trainerData.currentPokemon.getPokemon(pokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(pokemonIndex).checkHP().maxHP} HP")
+        println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
+        println("${trainerData.trainerName}, what will you do?")
         println("+-----------------+")
         println("|0 - FIGHT | 1 - Pokemon |")
         println("+-----------------+")
@@ -189,9 +189,10 @@ class BattleHandler {
                 choiceIndex = readln().toInt()
                 isMenu = false
             }catch(e: Exception){
+                println("Try again")
+                print("CHOICE:")
                 continue
             }finally{
-                println("Try again")
             }
         }
         when (choiceIndex){
@@ -218,9 +219,11 @@ class BattleHandler {
                 fightChoice = readln().toInt()
                 isMenu = false
             }catch(e: Exception){
+                println("Try again")
+                print("CHOICE:")
                 continue
             }finally{
-                println("Try again")
+
             }
         }
         println("+-----------------------+")
@@ -294,9 +297,11 @@ class BattleHandler {
                 switchChoice = readln().toInt()
                 isMenu = false
             }catch(e: Exception){
+                println("Try again")
+                print("CHOICE:")
                 continue
             }finally{
-                println("Try again")
+
             }
         }
         return switchChoice
