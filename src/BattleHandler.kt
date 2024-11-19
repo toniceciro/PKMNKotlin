@@ -239,11 +239,12 @@ class BattleHandler {
         val effectivityList = mutableListOf<Float>()
         var switchIndex: Int? = null
         var didOpponentSwitch = false
-
+        //If opponent's Pokemon is less than 30%, switch to type that is most effective against player 50% of the time, or 25% of the time regardless of HP%
         if(  (currentHP <= (.50 * maxHP) && (0..50).contains((0..100).random())  ) || (0..20).contains((0..100).random())){
-            //If opponent's Pokemon is less than 30%, switch to type that is most effective against player 50% of the time, or 25% of the time regardless of HP%
             switchIndex = opponentSwitchSelector(player,player2,playerChoice)
             didOpponentSwitch = true
+            //If opponent switches to the same pokemon, cancel intent to switch
+            if (switchIndex == opponentPokemonIndex){switchIndex = null; didOpponentSwitch = false}
         }
 
         while (x < 4 && didOpponentSwitch == false){
