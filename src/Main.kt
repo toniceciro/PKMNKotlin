@@ -11,7 +11,7 @@ fun main() {
         println("Select Game Mode")
         println("0 - Quick Battle")
         println("1 - Custom Battle")
-        println("2 - Trainer Editor")
+        println("2 - Battle Speed")
         println("3 - Stress Test")
         println("4 - Multiplayer")
         val choice: String = readLine() ?: "0"
@@ -24,7 +24,19 @@ fun main() {
                 quickBattle(currentTrainer)
             }
         }
-            2 -> TODO()
+            2 -> {
+                println("Battle Speed:")
+                println("0 - Normal")
+                println("1 - Fast (Default)")
+                println("2 - Instant")
+                val choice = readln().toInt()
+                when (choice){
+                    0 -> battleSpeed = 500
+                    1 -> battleSpeed = 250
+                    2 -> battleSpeed = 0
+                    else -> battleSpeed = 500
+                }
+            }
             3 -> stressTest(readln().toInt())
             4 -> {
                 println("Player 1 Name: ")
@@ -82,6 +94,7 @@ fun quickBattle(trainer: TrainerClass){
 }
 
 fun stressTest(turnCounts:Int){
+    battleSpeed = 0
     println("+-------------+")
     println("+---STRESS TEST---+")
     println("+-------------+")
@@ -97,6 +110,7 @@ fun stressTest(turnCounts:Int){
         battleHandler.battleMain(trainer1,trainer2)
         count++
     }
+    battleSpeed = 1000
 }
 class TrainerList<TrainerClass>(vararg trainer: TrainerClass){
 

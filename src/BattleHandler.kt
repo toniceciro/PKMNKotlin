@@ -1,4 +1,4 @@
-private val battleSpeed: Long = 1000
+public var battleSpeed: Long = 250
 
 class BattleHandler {
 
@@ -240,8 +240,8 @@ class BattleHandler {
         var switchIndex: Int? = null
         var didOpponentSwitch = false
 
-        if(  (currentHP <= (.50 * maxHP) && (0..30).contains((0..100).random())  ) || (0..10).contains((0..100).random())){
-            //If opponent's Pokemon is less than 30%, switch to type that is most effective against player 30% of the time, or 10% anytime
+        if(  (currentHP <= (.50 * maxHP) && (0..50).contains((0..100).random())  ) || (0..20).contains((0..100).random())){
+            //If opponent's Pokemon is less than 30%, switch to type that is most effective against player 50% of the time, or 25% of the time regardless of HP%
             switchIndex = opponentSwitchSelector(player,player2,playerChoice)
             didOpponentSwitch = true
         }
