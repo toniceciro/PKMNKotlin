@@ -14,7 +14,7 @@ class BattleHandler {
         Thread.sleep(battleSpeed)
         //Send out Pokemon
         var initialPlayerPokemonIndex: Int
-        if(player.isAI){initialPlayerPokemonIndex = 0}
+        if(player.isAI){initialPlayerPokemonIndex = (0..5).random()}
         else{initialPlayerPokemonIndex = switchSelector(player)}
         var playerChoice = playerChoiceData(null,initialPlayerPokemonIndex,initialPlayerPokemonIndex,false,player.isAI)
         var initialOpponentPokemonIndex: Int
