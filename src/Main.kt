@@ -5,9 +5,7 @@ fun main() {
     var trainerData = TrainerList<TrainerClass>()
     var currentTrainer = TrainerClass("DEFAULT")
     while (!endGame){
-        println("+-------------+")
         println("+---Pokemon Simulator---+")
-        println("+-------------+")
         println("Select Game Mode")
         println("0 - Quick Battle")
         println("1 - Custom Battle")
@@ -98,7 +96,11 @@ fun stressTest(turnCounts:Int){
     println("+-------------+")
     println("+---STRESS TEST---+")
     println("+-------------+")
+    var winStat1 = 0
+    var winStat2 = 0
+    var totalTurnCount = mutableListOf<Int>()
     var count = 0
+
     while (count < turnCounts){
         println("+-------EPOCH $count------+")
         val trainer1 = TrainerClass("TEST1", true)
@@ -106,9 +108,22 @@ fun stressTest(turnCounts:Int){
         trainer1.generatePokemon(6,4,false)
         trainer2.generatePokemon(6,4,false)
         val battleHandler = BattleHandler()
-        battleHandler.battleMain(trainer1,trainer2)
+        val battleStats = battleHandler.battleMain(trainer1,trainer2)
+        when(battleStats.playerWin){
+            true -> winStat1++
+            false -> winStat2++
+        }
+        totalTurnCount.add(battleStats.totalTurns)
         count++
     }
+    println("Battle Stats:")
+    println("Player 1 Wins: $winStat1")
+    println("Player 2 Wins: $winStat2")
+    var ratio: Float = winStat1.toFloat()/winStat2.toFloat()
+    println("Ratio: ${ratio}")
+    println("Average Turn Count: ${totalTurnCount.average()}")
+    println("Min Turn Count: ${totalTurnCount.min()}")
+    println("Max Turn Count: ${totalTurnCount.max()}")
     battleSpeed = 1000
 }
 class TrainerList<TrainerClass>(vararg trainer: TrainerClass){

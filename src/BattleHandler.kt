@@ -1,8 +1,8 @@
-public var battleSpeed: Long = 250
+var battleSpeed: Long = 250
 
 class BattleHandler {
 
-    fun battleMain(player:TrainerClass, player2:TrainerClass){
+    fun battleMain(player:TrainerClass, player2:TrainerClass):battleData{
         var isBattleFinished = false
         var turnCount = 0
         println("+--------------------+")
@@ -13,14 +13,14 @@ class BattleHandler {
         println("+--------------------+")
         Thread.sleep(battleSpeed)
         //Send out Pokemon
-        var initialPlayerPokemonIndex: Int
+        var initialPlayerPokemonIndex: Int?
         if(player.isAI){initialPlayerPokemonIndex = (0..5).random()}
-        else{initialPlayerPokemonIndex = switchSelector(player)}
-        var playerChoice = playerChoiceData(null,initialPlayerPokemonIndex,initialPlayerPokemonIndex,false,player.isAI)
-        var initialOpponentPokemonIndex: Int
+        else{initialPlayerPokemonIndex = switchSelector(player,true)}
+        var playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
+        var initialOpponentPokemonIndex: Int?
         if(player2.isAI){initialOpponentPokemonIndex = opponentSwitchSelector(player,player2,playerChoice)}
         else{initialOpponentPokemonIndex = switchSelector(player2)}
-        var opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex,initialOpponentPokemonIndex,false,player2.isAI)
+        var opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
         playerChoice = battleSwitchHandler(player,playerChoice,true)
         opponentChoice = battleSwitchHandler(player2,opponentChoice,true)
         while (!isBattleFinished){
@@ -54,6 +54,7 @@ class BattleHandler {
         }
         println("+-----------------------+")
         Thread.sleep(battleSpeed)
+        return battleData(!playerChoice.isTrainerDefeated,!opponentChoice.isTrainerDefeated,turnCount)
     }
     //Main battle functions
     private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:playerChoiceData, opponentChoice: playerChoiceData):playerChoiceData{
@@ -66,7 +67,7 @@ class BattleHandler {
                     return playerChoiceData(null,playerChoice.currentPokemonIndex,switchPlayerPokemonIndex,playerChoice.isTrainerDefeated,playerChoice.isAI)
                 }
                 if (playerChoice.isAI == false){
-                    val switchPlayerPokemonIndex = switchSelector(sourceTrainer)
+                    val switchPlayerPokemonIndex = switchSelector(sourceTrainer,true)
                     return playerChoiceData(null,playerChoice.currentPokemonIndex,switchPlayerPokemonIndex, playerChoice.isTrainerDefeated,playerChoice.isAI)
                 }
             }
@@ -153,7 +154,8 @@ class BattleHandler {
 
         //Reduce HP of target Pokemon
         targetPokemon.damageHP(battleResult.damageAmount)
-    }private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, isInitial: Boolean = false):playerChoiceData{
+    }
+    private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, isInitial: Boolean = false):playerChoiceData{
         if(playerChoice.switchToIndex != null){
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
@@ -175,59 +177,57 @@ class BattleHandler {
     }
     private fun playerHandler(trainerData: TrainerClass, playerChoice: playerChoiceData): playerChoiceData{
         val pokemonIndex = playerChoice.currentPokemonIndex
-        println("+--------------------+")
-        println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
-        println("${trainerData.trainerName}, what will you do?")
-        println("+-----------------+")
-        println("|0 - FIGHT | 1 - Pokemon |")
-        println("+-----------------+")
-        print("CHOICE:")
         var isMenu: Boolean = true
         var choiceIndex: Int = 0
-        while(isMenu){
+        var currentChoice = playerChoice
+        currentChoice.chosenMove = null; currentChoice.switchToIndex = null
+        while(  (currentChoice.chosenMove == null && currentChoice.switchToIndex == null)  ){
+            println("+--------------------+")
+            println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
+            println("${trainerData.trainerName}, what will you do?")
+            println("+-----------------+")
+            println("|0 - FIGHT | 1 - Pokemon |")
+            println("+-----------------+")
+            print("CHOICE: ")
             try{
                 choiceIndex = readln().toInt()
-                isMenu = false
+                when (choiceIndex){
+                    0 -> currentChoice = playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    1 -> currentChoice = playerChoiceData(null, pokemonIndex,switchSelector(trainerData),playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    else -> currentChoice = playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
+                }
             }catch(e: Exception){
-                println("Try again")
-                print("CHOICE:")
+                print("CHOICE: ")
                 continue
-            }finally{
             }
         }
-        when (choiceIndex){
-            0 -> return playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
-            1 -> return playerChoiceData(null, pokemonIndex,switchSelector(trainerData),playerChoice.isTrainerDefeated,playerChoice.isAI)
-            else -> return playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
-        }
-
-        TODO()
+        return currentChoice
     }
-    private fun fightSelector(trainerData: TrainerClass, pokemonIndex: Int): PokemonMoveset{
+    private fun fightSelector(trainerData: TrainerClass, pokemonIndex: Int): PokemonMoveset?{
         println("+--------------------+")
         println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonName} do?")
         println("+-----------------+")
         val moveList = trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList
-        println("| 0 - ${moveList.getMove(0).getName()} Power: ${moveList.getMove(0).getPower()} PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP} | 1 - ${moveList.getMove(1).getName()} Power: ${moveList.getMove(1).getPower()} PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP} |")
-        println("| 2 - ${moveList.getMove(2).getName()} Power: ${moveList.getMove(2).getPower()} PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP} | 3 - ${moveList.getMove(3).getName()} Power: ${moveList.getMove(3).getPower()} PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP} |")
+        println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} |")
+        println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} |")
         println("+-----------------+")
+        println("4 - BACK")
         print("CHOICE: ")
         var fightChoice = 0
         var isMenu = true
         while(isMenu){
             try{
                 fightChoice = readln().toInt()
-                isMenu = false
+                if(!(0..4).contains(fightChoice)){isMenu = true; print("CHOICE:")}
+                else{isMenu = false}
             }catch(e: Exception){
                 println("Try again")
                 print("CHOICE:")
                 continue
-            }finally{
-
             }
         }
-        println("+-----------------------+")
-        return trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList.getMove(fightChoice)
+        if(fightChoice == 4){return null}
+        else{return trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList.getMove(fightChoice)}
     }
     private fun opponentFightHandler(player:TrainerClass, player2:TrainerClass, playerChoice:playerChoiceData, opponentChoice:playerChoiceData):playerChoiceData{
 
@@ -240,7 +240,7 @@ class BattleHandler {
         var switchIndex: Int? = null
         var didOpponentSwitch = false
         //If opponent's Pokemon is less than 30%, switch to type that is most effective against player 50% of the time, or 25% of the time regardless of HP%
-        if(  (currentHP <= (.50 * maxHP) && (0..50).contains((0..100).random())  ) || (0..20).contains((0..100).random())){
+        if(  (currentHP <= (.30 * maxHP) && (0..50).contains((0..100).random())  ) || (0..25).contains((0..100).random())){
             switchIndex = opponentSwitchSelector(player,player2,playerChoice)
             didOpponentSwitch = true
             //If opponent switches to the same pokemon, cancel intent to switch
@@ -285,24 +285,25 @@ class BattleHandler {
         val bestPokemonIndex = effectivityList.indexOf(effectivityList.maxOrNull())
         return bestPokemonIndex
     }
-    private fun switchSelector(trainerData:TrainerClass): Int{
-        println("+--------------------+")
-        println("Select a pokemon to switch to: ")
-        println("+-----------------+")
-        trainerData.listPokemon()
-        print("CHOICE:")
+    private fun switchSelector(trainerData:TrainerClass, forcedFlag: Boolean = false): Int?{
         var switchChoice = 0
         var isMenu = true
         while(isMenu){
+            println("+--------------------+")
+            println("${trainerData.trainerName}, select a pokemon to switch to: ")
+            println("+-----------------+")
+            trainerData.listPokemon()
+            if(!forcedFlag){println("6 - BACK")}
+            print("CHOICE:")
             try{
                 switchChoice = readln().toInt()
-                isMenu = false
+                if(!forcedFlag && switchChoice == 6){return null}
+                if((0..5).contains(switchChoice)){return switchChoice}
+                else{isMenu = true}
             }catch(e: Exception){
                 println("Try again")
                 print("CHOICE:")
                 continue
-            }finally{
-
             }
         }
         return switchChoice
@@ -466,3 +467,4 @@ class BattleHandler {
 }
 data class battleResult(var damageAmount: Int, var isCritical: Boolean, var effectiveVal: Float,var sourcePokemon: String, var targetPokemon:String)
 data class playerChoiceData(var chosenMove: PokemonMoveset?, var currentPokemonIndex: Int, var switchToIndex: Int?, var isTrainerDefeated: Boolean = false, var isAI: Boolean = false)
+data class battleData(var playerWin: Boolean, var opponentWin: Boolean, var totalTurns: Int)
