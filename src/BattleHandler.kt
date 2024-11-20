@@ -12,17 +12,37 @@ class BattleHandler {
         Thread.sleep(battleSpeed)
         println("+--------------------+")
         Thread.sleep(battleSpeed)
-        //Send out Pokemon
+        //Randomize who gets to send out pokemon first
         var initialPlayerPokemonIndex: Int?
-        if(player.isAI){initialPlayerPokemonIndex = (0..5).random()}
-        else{initialPlayerPokemonIndex = switchSelector(player,true)}
-        var playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
         var initialOpponentPokemonIndex: Int?
-        if(player2.isAI){initialOpponentPokemonIndex = opponentSwitchSelector(player,player2,playerChoice)}
-        else{initialOpponentPokemonIndex = switchSelector(player2)}
-        var opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
-        playerChoice = battleSwitchHandler(player,playerChoice,true)
-        opponentChoice = battleSwitchHandler(player2,opponentChoice,true)
+        var playerChoice: playerChoiceData = playerChoiceData(null,0,null)
+        var opponentChoice: playerChoiceData = playerChoiceData(null,0,null)
+        when((0..1).random()){
+            0 ->{
+                //Send out Pokemon
+                if(player.isAI){initialPlayerPokemonIndex = (0..5).random()}
+                else{initialPlayerPokemonIndex = switchSelector(player,true)}
+                playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
+                //Send out opponent Pokemon
+                if(player2.isAI){initialOpponentPokemonIndex = opponentSwitchSelector(player,player2,playerChoice)}
+                else{initialOpponentPokemonIndex = switchSelector(player2)}
+                opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
+                playerChoice = battleSwitchHandler(player,playerChoice,true)
+                opponentChoice = battleSwitchHandler(player2,opponentChoice,true)
+            }
+            1 ->{
+                //Send out opponent Pokemon
+                if(player2.isAI){initialOpponentPokemonIndex = (0..5).random()}
+                else{initialOpponentPokemonIndex = switchSelector(player2)}
+                opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
+                //Send out Pokemon
+                if(player.isAI){initialPlayerPokemonIndex = opponentSwitchSelector(player2,player,opponentChoice)}
+                else{initialPlayerPokemonIndex = switchSelector(player,true)}
+                playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
+                playerChoice = battleSwitchHandler(player,playerChoice,true)
+                opponentChoice = battleSwitchHandler(player2,opponentChoice,true)
+            }
+        }
         while (!isBattleFinished){
             //Check if player pokemon fainted
             playerChoice = battleFaintHandler(player,player2,playerChoice, opponentChoice)

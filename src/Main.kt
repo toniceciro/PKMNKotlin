@@ -107,6 +107,8 @@ fun stressTest(turnCounts:Int){
         val trainer2 = TrainerClass("TEST2", true)
         trainer1.generatePokemon(6,4,false)
         trainer2.generatePokemon(6,4,false)
+        trainer1.listPokemon()
+        trainer2.listPokemon()
         val battleHandler = BattleHandler()
         val battleStats = battleHandler.battleMain(trainer1,trainer2)
         when(battleStats.playerWin){
