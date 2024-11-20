@@ -149,8 +149,25 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveFairyPPList = listOf(15, 10, 10, 10, 30, 10, 10, 10, 15, 5)
         val pokemonMoveFairyAccuracyList = listOf(100, 100, 90, 100, 100, 100, 100, 75, 100, 100)
         val FairyPokemonList = listOf(pokemonNameFairyList,pokemonMoveFairyList,pokemonPowerFairyList,pokemonMoveFairyPPList,pokemonMoveFairyAccuracyList)
-        val MainPokemonList = listOf(FirePokemonList, WaterPokemonList, GrassPokemonList, NormalPokemonList, BugPokemonList, RockPokemonList, FlyingPokemonList, SteelPokemonList, ElectricPokemonList, PsychicPokemonList, DarkPokemonList, GhostPokemonList, FairyPokemonList)
-        val PokemonTypeList = listOf("Fire","Water","Grass","Normal","Bug","Rock","Flying","Steel","Electric","Psychic","Dark","Ghost","Fairy")
+
+        val pokemonNameGroundList = listOf("Diglett", "Dugtrio", "Sandshrew", "Sandslash", "Cubone", "Marowak", "Gligar", "Golem", "Mudbray", "Mudsdale")
+        val pokemonMoveGroundList = listOf("Earthquake", "Bulldoze", "Earth Power", "Mud-Slap", "Sand Tomb", "Magnitude", "Dig", "Bonemerang", "Mud Shot", "Precipice Blades")
+        val pokemonPowerGroundList = listOf(100, 60, 90, 20, 35, 50, 80, 50, 55, 120)
+        val pokemonMoveGroundPPList = listOf(10, 20, 10, 10, 15, 30, 10, 10, 15, 10)
+        val pokemonMoveGroundAccuracyList = listOf(100, 100, 100, 100, 85, 100, 100, 90, 95, 85)
+        val GroundPokemonList = listOf(pokemonNameGroundList, pokemonMoveGroundList, pokemonPowerGroundList, pokemonMoveGroundPPList, pokemonMoveGroundAccuracyList)
+
+        val pokemonNameDragonList = listOf("Dratini", "Dragonair", "Dragonite", "Bagon", "Shelgon", "Salamence", "Gible", "Gabite", "Garchomp", "Axew")
+        val pokemonMoveDragonList = listOf("Dragon Claw", "Dragon Tail", "Dragon Pulse", "Outrage", "Draco Meteor", "Dragon Rush", "Dragon Breath", "Dual Chop", "Twister", "Roar of Time")
+        val pokemonPowerDragonList = listOf(80, 60, 85, 120, 130, 100, 60, 40, 40, 150)
+        val pokemonMoveDragonPPList = listOf(15, 10, 10, 10, 5, 10, 20, 15, 20, 5)
+        val pokemonMoveDragonAccuracyList = listOf(100, 90, 100, 100, 90, 75, 100, 90, 100, 90)
+        val DragonPokemonList = listOf(pokemonNameDragonList, pokemonMoveDragonList, pokemonPowerDragonList, pokemonMoveDragonPPList, pokemonMoveDragonAccuracyList)
+
+
+
+        val MainPokemonList = listOf(FirePokemonList, WaterPokemonList, GrassPokemonList, NormalPokemonList, BugPokemonList, RockPokemonList, FlyingPokemonList, SteelPokemonList, ElectricPokemonList, PsychicPokemonList, DarkPokemonList, GhostPokemonList, FairyPokemonList, GroundPokemonList, DragonPokemonList)
+        val PokemonTypeList = listOf("Fire","Water","Grass","Normal","Bug","Rock","Flying","Steel","Electric","Psychic","Dark","Ghost","Fairy","Ground", "Dragon")
 
         var i = 0
         while (i < pokemonAmount){
@@ -159,12 +176,23 @@ class TrainerClass(name:String, isAI:Boolean = false) {
             val pokemonName = MainPokemonList[typeRand][0][nameRand].toString()
             val createdPokemon = PokemonClass(pokemonName, PokemonTypeList.get(typeRand), 100)
             if (!isSilent) println("${createdPokemon.pokemonName} at Level ${createdPokemon.getLevel()} is created!")
-            var j = 0
-            while(j < movesAmount){
+            while(createdPokemon.pokemonMoveList.size() < movesAmount){
+                var matchFound = false
                 val rand = MainPokemonList[typeRand][1].indices.random()
-                createdPokemon.pokemonMoveList.push(PokemonMoveset(MainPokemonList[typeRand][1][rand].toString(),PokemonTypeList.get(typeRand),MainPokemonList[typeRand][2][rand].toString().toInt(),MainPokemonList[typeRand][3][rand].toString().toInt(),MainPokemonList[typeRand][4][rand].toString().toInt()))
-                if (!isSilent) println("${createdPokemon.pokemonName} learned ${createdPokemon.pokemonMoveList.getMove(j).getName()}! $j")
-                j++
+                val createdMove = PokemonMoveset(MainPokemonList[typeRand][1][rand].toString(),PokemonTypeList.get(typeRand),MainPokemonList[typeRand][2][rand].toString().toInt(),MainPokemonList[typeRand][3][rand].toString().toInt(),MainPokemonList[typeRand][4][rand].toString().toInt())
+                var k = 0
+                while (k < createdPokemon.pokemonMoveList.size()){
+                    if (createdPokemon.pokemonMoveList.getMove(k).getName() != createdMove.getName()){
+                        k++
+                    }
+                    else{
+                        matchFound = true
+                        k++
+                    }
+                }
+                if (matchFound){continue}
+                createdPokemon.pokemonMoveList.push(createdMove)
+                if (!isSilent) println("${createdPokemon.pokemonName} learned ${createdPokemon.pokemonMoveList.getMove(createdPokemon.pokemonMoveList.size() - 1).getName()}!")
             }
             if (!isSilent) println("${createdPokemon.pokemonName}  is added to the party.")
             currentPokemon.addToParty(createdPokemon)

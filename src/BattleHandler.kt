@@ -13,10 +13,10 @@ class BattleHandler {
         println("+--------------------+")
         Thread.sleep(battleSpeed)
         //Randomize who gets to send out pokemon first
-        var initialPlayerPokemonIndex: Int?
-        var initialOpponentPokemonIndex: Int?
-        var playerChoice: playerChoiceData = playerChoiceData(null,0,null)
-        var opponentChoice: playerChoiceData = playerChoiceData(null,0,null)
+        val initialPlayerPokemonIndex: Int?
+        val initialOpponentPokemonIndex: Int?
+        var playerChoice = playerChoiceData(null,0,null)
+        var opponentChoice = playerChoiceData(null,0,null)
         when((0..1).random()){
             0 ->{
                 //Send out Pokemon
@@ -514,6 +514,27 @@ class BattleHandler {
             type1 == "Fairy" && type2 == "Dark" -> 2F
             type1 == "Fairy" && type2 == "Poison" -> 0.5F
             type1 == "Fairy" && type2 == "Steel" -> 0.5F
+
+            // Ground
+            type1 == "Ground" && type2 == "Fire" -> 2F
+            type1 == "Ground" && type2 == "Electric" -> 2F
+            type1 == "Ground" && type2 == "Grass" -> 0.5F
+            type1 == "Ground" && type2 == "Ice" -> 0.5F
+            type1 == "Ground" && type2 == "Poison" -> 2F
+            type1 == "Ground" && type2 == "Rock" -> 2F
+            type1 == "Ground" && type2 == "Bug" -> 0.5F
+            type1 == "Ground" && type2 == "Steel" -> 2F
+            type1 == "Ground" && type2 == "Flying" -> 0F
+
+            // Dragon
+            type1 == "Dragon" && type2 == "Dragon" -> 2F
+            type1 == "Dragon" && type2 == "Steel" -> 0.5F
+            type1 == "Dragon" && type2 == "Fairy" -> 0.5F
+            type1 == "Dragon" && type2 == "Fire" -> 0.5F
+            type1 == "Dragon" && type2 == "Water" -> 0.5F
+            type1 == "Dragon" && type2 == "Electric" -> 0.5F
+
+
 
             else -> 1F
         }
