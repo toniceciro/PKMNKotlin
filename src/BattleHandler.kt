@@ -376,8 +376,22 @@ class BattleHandler {
             true -> 1.5F
             false -> 1.0F
         }
-        val effectivenessValue =
-            effectivenessValue(sourcePokemon.pokemonType, targetPokemon.pokemonType)
+        //calculate effectiveness value
+        //Check & parse pokemon type
+        val targetType = targetPokemon.pokemonType.substringBefore('|')
+        val targetType2 = targetPokemon.pokemonType.substringAfter('|')
+        val effectivenessValue = when(targetType2 == targetType){
+            true -> {
+                //Target pokemon is single type
+                effectivenessValue(sourceMove.getType(), targetPokemon.pokemonType)
+            }
+
+            false -> {
+                //Target pokemon is dual type
+                effectivenessValue(sourceMove.getType(),targetType) * effectivenessValue(sourceMove.getType(),targetType2)
+            }
+        }
+
         //Check if it misses
         val basePower: Int
         when( ((0..sourceMove.getAccuracy()).contains((0..100).random())) ){
@@ -420,7 +434,6 @@ class BattleHandler {
             type1 == "Water" && type2 == "Ground" -> 2F
             type1 == "Water" && type2 == "Rock" -> 2F
             type1 == "Water" && type2 == "Water" -> 0.5F
-            type1 == "Water" && type2 == "Dragon" -> 0.5F
 
             // Grass
             type1 == "Grass" && type2 == "Fire" -> 0.5F
