@@ -35,12 +35,47 @@ class BattleHandler {
             //Check if opponent switch pokemon
             opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
             if (!isBattleFinished){
-                playerChoice = choiceHandler(player,player2,playerChoice,opponentChoice)
-                //Check if player switched pokemon
-                playerChoice = battleSwitchHandler(player,playerChoice,false)
-                opponentChoice = choiceHandler(player2,player,opponentChoice,playerChoice)
-                //Check if opponent switch pokemon
-                opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+                //Prompts the trainer with the fastest pokemon first, else randomly choose
+                val player1Speed = player.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonSPD
+                val player2Speed = player2.currentPokemon.getPokemon(opponentChoice.currentPokemonIndex).pokemonSPD
+                when{
+                    player1Speed > player2Speed -> {
+                        playerChoice = choiceHandler(player,player2,playerChoice,opponentChoice)
+                        //Check if player switched pokemon
+                        playerChoice = battleSwitchHandler(player,playerChoice,false)
+                        opponentChoice = choiceHandler(player2,player,opponentChoice,playerChoice)
+                        //Check if opponent switch pokemon
+                        opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+                    }
+                    player1Speed < player2Speed -> {
+                        opponentChoice = choiceHandler(player2,player,opponentChoice,playerChoice)
+                        //Check if opponent switch pokemon
+                        opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+                        playerChoice = choiceHandler(player,player2,playerChoice,opponentChoice)
+                        //Check if player switched pokemon
+                        playerChoice = battleSwitchHandler(player,playerChoice,false)
+                    }
+                    else ->{
+                        when((0..1).random()){
+                            0 -> {
+                                playerChoice = choiceHandler(player,player2,playerChoice,opponentChoice)
+                                //Check if player switched pokemon
+                                playerChoice = battleSwitchHandler(player,playerChoice,false)
+                                opponentChoice = choiceHandler(player2,player,opponentChoice,playerChoice)
+                                //Check if opponent switch pokemon
+                                opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+                            }
+                            1 -> {
+                                opponentChoice = choiceHandler(player2,player,opponentChoice,playerChoice)
+                                //Check if opponent switch pokemon
+                                opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+                                playerChoice = choiceHandler(player,player2,playerChoice,opponentChoice)
+                                //Check if player switched pokemon
+                                playerChoice = battleSwitchHandler(player,playerChoice,false)
+                            }
+                        }
+                    }
+                }
                 println("+---Turn ${turnCount}---+")
                 mainFightHandler(player,player2,playerChoice,opponentChoice)
                 Thread.sleep(battleSpeed)
@@ -50,7 +85,7 @@ class BattleHandler {
         println("+-----------------------+")
         when{
             playerChoice.isTrainerDefeated -> println("${player2.trainerName} won the match!")
-            opponentChoice.isTrainerDefeated == true -> println("${player.trainerName} won the match!")
+            opponentChoice.isTrainerDefeated -> println("${player.trainerName} won the match!")
         }
         println("+-----------------------+")
         Thread.sleep(battleSpeed)
