@@ -98,9 +98,12 @@ fun stressTest(turnCounts:Int){
     println("+-------------+")
     var winStat1 = 0
     var winStat2 = 0
-    var totalTurnCount = mutableListOf<Int>()
+    var winRandStat1 = 0
+    var winRandStat2 = 0
+    val totalTurnCount = mutableListOf<Int>()
+    val totalRandTurnCount = mutableListOf<Int>()
     var count = 0
-
+    //Fixed 6 Pokemon
     while (count < turnCounts){
         println("+-------EPOCH $count------+")
         val trainer1 = TrainerClass("TEST1", true)
@@ -118,7 +121,28 @@ fun stressTest(turnCounts:Int){
         totalTurnCount.add(battleStats.totalTurns)
         count++
     }
-    println("Battle Stats:")
+    //Rand 6 Pokemon
+    count = 0
+    while (count < turnCounts){
+        println("+-------EPOCH $count------+")
+        val trainer1 = TrainerClass("TEST1", true)
+        val trainer2 = TrainerClass("TEST2", true)
+        val randomPokemonAmount = (1..6).random()
+        trainer1.generatePokemon(randomPokemonAmount,4,false)
+        trainer2.generatePokemon(randomPokemonAmount,4,false)
+        trainer1.listPokemon()
+        trainer2.listPokemon()
+        val battleHandler = BattleHandler()
+        val battleStats = battleHandler.battleMain(trainer1,trainer2)
+        when(battleStats.playerWin){
+            true -> winRandStat1++
+            false -> winRandStat2++
+        }
+        totalRandTurnCount.add(battleStats.totalTurns)
+        count++
+    }
+    println("+----+")
+    println("Battle Stats (Fixed):")
     println("Player 1 Wins: $winStat1")
     println("Player 2 Wins: $winStat2")
     var ratio: Float = winStat1.toFloat()/winStat2.toFloat()
@@ -126,6 +150,15 @@ fun stressTest(turnCounts:Int){
     println("Average Turn Count: ${totalTurnCount.average()}")
     println("Min Turn Count: ${totalTurnCount.min()}")
     println("Max Turn Count: ${totalTurnCount.max()}")
+    println("+----+")
+    println("Battle Stats (Random # Pokemon):")
+    println("Player 1 Wins: $winRandStat1")
+    println("Player 2 Wins: $winRandStat2")
+    var ratio2: Float = winRandStat1.toFloat()/winRandStat2.toFloat()
+    println("Ratio: ${ratio2}")
+    println("Average Turn Count: ${totalRandTurnCount.average()}")
+    println("Min Turn Count: ${totalRandTurnCount.min()}")
+    println("Max Turn Count: ${totalRandTurnCount.max()}")
     battleSpeed = 1000
 }
 

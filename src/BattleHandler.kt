@@ -306,26 +306,22 @@ class BattleHandler {
             if (switchIndex == opponentPokemonIndex){switchIndex = null; didOpponentSwitch = false}
         }
 
-        while (x < 4 && didOpponentSwitch == false){
+        while (x < 4 && !didOpponentSwitch){
             when(player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).checkIfEmpty()){
-                false -> effectivityList.add((effectivenessValue(playerPokemonType, player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getType())) * player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getPower())
+                false -> effectivityList.add((effectivenessValue(playerPokemonType, player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getType())) * player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getPower() * (player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getAccuracy() * 0.25F))
                 true -> effectivityList.add(-1F)
             }
             x++
         }
-        while (x < 4 && didOpponentSwitch == true){
-            when(player2.currentPokemon.getPokemon(switchIndex!!).pokemonMoveList.getMove(x).checkIfEmpty()){
-                false -> effectivityList.add((effectivenessValue(playerPokemonType, player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getType())) * player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getPower())
-                true -> effectivityList.add(-1F)
-            }
-            x++
-        }
-        val bestMoveIndex: Int = when (effectivityList.maxOrNull()){
-            null -> {
-                effectivityList.indexOf(effectivityList.random())
-            }
-            else -> {
-                effectivityList.indexOf(effectivityList.maxOrNull())
+        var bestMoveIndex = 0
+        if (!didOpponentSwitch){
+            bestMoveIndex = when (effectivityList.maxOrNull()){
+                null -> {
+                    effectivityList.indexOf(effectivityList.random())
+                }
+                else -> {
+                    effectivityList.indexOf(effectivityList.maxOrNull())
+                }
             }
         }
         if(didOpponentSwitch){return playerChoiceData(null,opponentPokemonIndex,switchIndex,opponentChoice.isTrainerDefeated,opponentChoice.isAI)}
