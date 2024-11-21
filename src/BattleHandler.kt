@@ -183,20 +183,6 @@ class BattleHandler {
         println("${sourcePokemon.pokemonName} used ${sourceChoice.chosenMove?.getName()}!")
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
-        when (battleResult.damageAmount <= 0){
-            false -> {
-                println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.pokemonName}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
-                Thread.sleep(battleSpeed)
-            }
-            (battleResult.isNotAffected) -> {
-                println("It doesn't affect ${targetPokemon.pokemonName}...")
-                Thread.sleep(battleSpeed)
-            }
-            else -> {
-                println("${sourcePokemon.pokemonName}'s attack missed!")
-                Thread.sleep(battleSpeed)
-            }
-        }
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
             println("Critical hit!")
             Thread.sleep(battleSpeed)
@@ -208,6 +194,20 @@ class BattleHandler {
             }
             battleResult.effectiveVal < 1.0F && battleResult.damageAmount > 0 -> {
                 println("It's not very effective...")
+                Thread.sleep(battleSpeed)
+            }
+        }
+        when (battleResult.damageAmount <= 0){
+            false -> {
+                println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.pokemonName}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
+                Thread.sleep(battleSpeed)
+            }
+            (battleResult.isNotAffected) -> {
+                println("It doesn't affect ${targetPokemon.pokemonName}...")
+                Thread.sleep(battleSpeed)
+            }
+            else -> {
+                println("${sourcePokemon.pokemonName}'s attack missed!")
                 Thread.sleep(battleSpeed)
             }
         }
