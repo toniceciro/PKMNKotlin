@@ -3,7 +3,7 @@ var battleSpeed: Long = 250
 class BattleHandler {
 
     fun battleMain(player:TrainerClass, player2:TrainerClass):battleData{
-        var isBattleFinished = false
+        val isBattleFinished = false
         var turnCount = 0
         println("+--------------------+")
         Thread.sleep(battleSpeed)
@@ -20,7 +20,7 @@ class BattleHandler {
         when((0..1).random()){
             0 ->{
                 //Send out Pokemon
-                if(player.isAI){initialPlayerPokemonIndex = (0..5).random()}
+                if(player.isAI){initialPlayerPokemonIndex = (0..<player.currentPokemon.size()).random()}
                 else{initialPlayerPokemonIndex = switchSelector(player,true)}
                 playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
                 //Send out opponent Pokemon
@@ -32,7 +32,7 @@ class BattleHandler {
             }
             1 ->{
                 //Send out opponent Pokemon
-                if(player2.isAI){initialOpponentPokemonIndex = (0..5).random()}
+                if(player2.isAI){initialOpponentPokemonIndex = (0..<player2.currentPokemon.size()).random()}
                 else{initialOpponentPokemonIndex = switchSelector(player2)}
                 opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
                 //Send out Pokemon
@@ -44,6 +44,9 @@ class BattleHandler {
             }
         }
         while (!isBattleFinished){
+            //Reset States
+            playerChoice.chosenMove = null; playerChoice.switchToIndex = null
+            opponentChoice.chosenMove = null; opponentChoice.switchToIndex = null
             //Check if player pokemon fainted
             playerChoice = battleFaintHandler(player,player2,playerChoice, opponentChoice)
             if (playerChoice.isTrainerDefeated) break
@@ -180,33 +183,34 @@ class BattleHandler {
         println("${sourcePokemon.pokemonName} used ${sourceChoice.chosenMove?.getName()}!")
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
-        when{
-            battleResult.effectiveVal > 1.0F -> {
-                println("It's super effective!")
-                Thread.sleep(battleSpeed)
-            }
-            battleResult.effectiveVal < 1.0F -> {
-                println("It's not very effective...")
-                Thread.sleep(battleSpeed)
-            }
-        }
-
-        if(battleResult.isCritical && battleResult.damageAmount > 0) {
-            println("Critical hit!")
-            Thread.sleep(battleSpeed)
-        }
-
         when (battleResult.damageAmount <= 0){
             false -> {
                 println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.pokemonName}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
                 Thread.sleep(battleSpeed)
             }
-            true -> {
+            (battleResult.isNotAffected) -> {
+                println("It doesn't affect ${targetPokemon.pokemonName}...")
+                Thread.sleep(battleSpeed)
+            }
+            else -> {
                 println("${sourcePokemon.pokemonName}'s attack missed!")
                 Thread.sleep(battleSpeed)
             }
         }
-
+        if(battleResult.isCritical && battleResult.damageAmount > 0) {
+            println("Critical hit!")
+            Thread.sleep(battleSpeed)
+        }
+        when{
+            battleResult.effectiveVal > 1.0F && battleResult.damageAmount > 0 -> {
+                println("It's super effective!")
+                Thread.sleep(battleSpeed)
+            }
+            battleResult.effectiveVal < 1.0F && battleResult.damageAmount > 0 -> {
+                println("It's not very effective...")
+                Thread.sleep(battleSpeed)
+            }
+        }
         //Reduce HP of target Pokemon
         targetPokemon.damageHP(battleResult.damageAmount)
     }
@@ -315,7 +319,6 @@ class BattleHandler {
                 true -> effectivityList.add(-1F)
             }
             x++
-            didOpponentSwitch = false
         }
         val bestMoveIndex: Int = when (effectivityList.maxOrNull()){
             null -> {
@@ -325,8 +328,8 @@ class BattleHandler {
                 effectivityList.indexOf(effectivityList.maxOrNull())
             }
         }
-        val bestMoveChoice = playerChoiceData(player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(bestMoveIndex),opponentPokemonIndex,switchIndex,opponentChoice.isTrainerDefeated,opponentChoice.isAI)
-        return bestMoveChoice
+        if(didOpponentSwitch){return playerChoiceData(null,opponentPokemonIndex,switchIndex,opponentChoice.isTrainerDefeated,opponentChoice.isAI)}
+        else{return playerChoiceData(player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(bestMoveIndex),opponentPokemonIndex,null,opponentChoice.isTrainerDefeated,opponentChoice.isAI)}
     }
     private fun opponentSwitchSelector(player:TrainerClass, opponentTrainer: TrainerClass, playerChoice:playerChoiceData):Int{
         val playerPokemonType = player.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonType
@@ -377,21 +380,9 @@ class BattleHandler {
             false -> 1.0F
         }
         //calculate effectiveness value
-        //Check & parse pokemon type
-        val targetType = targetPokemon.pokemonType.substringBefore('|')
-        val targetType2 = targetPokemon.pokemonType.substringAfter('|')
-        val effectivenessValue = when(targetType2 == targetType){
-            true -> {
-                //Target pokemon is single type
-                effectivenessValue(sourceMove.getType(), targetPokemon.pokemonType)
-            }
-
-            false -> {
-                //Target pokemon is dual type
-                effectivenessValue(sourceMove.getType(),targetType) * effectivenessValue(sourceMove.getType(),targetType2)
-            }
-        }
-
+        var isNotAffected: Boolean = false
+        val effectivenessValue = effectivenessValue(sourceMove.getType(), targetPokemon.pokemonType)
+        if (effectivenessValue == 0F){isNotAffected = true}
         //Check if it misses
         val basePower: Int
         when( ((0..sourceMove.getAccuracy()).contains((0..100).random())) ){
@@ -403,13 +394,15 @@ class BattleHandler {
         val modifier2 = (sourcePokemon.pokemonATK.toFloat() / targetPokemon.pokemonDEF.toFloat())
         val baseDamage = basePower * STABvalue * effectivenessValue * critValue * listOf(0.85F,1F).random()
         val totalDamage = (modifier1 * modifier2) * baseDamage
-
         //Add to battleresult calc
-        var result = battleResult(totalDamage.toInt(), critStatus, effectivenessValue,sourcePokemon.pokemonName,targetPokemon.pokemonName)
+        val result = battleResult(totalDamage.toInt(), critStatus, effectivenessValue,sourcePokemon.pokemonName,targetPokemon.pokemonName,isNotAffected)
         return result
     }
-    private fun isStab(type1: String, type2:String): Boolean{
-        return type1 == type2
+    private fun isStab(sourceMoveType: String, sourcePokemonType:String): Boolean{
+        val moveType = sourceMoveType.substringBefore('|')
+        val pokemonType = sourcePokemonType.substringBefore('|')
+        val pokemonType2 = sourcePokemonType.substringAfter('|')
+        return moveType == pokemonType || moveType == pokemonType2
     }
     private fun isCritical(): Boolean{
         val chance = (0..100).random()
@@ -417,143 +410,161 @@ class BattleHandler {
         else return false
     }
     private fun effectivenessValue(type1: String, type2: String): Float{
-        return when {
-            // Fire
-            type1 == "Fire" && type2 == "Water" -> 0.5F
-            type1 == "Fire" && type2 == "Grass" -> 2F
-            type1 == "Fire" && type2 == "Bug" -> 2F
-            type1 == "Fire" && type2 == "Rock" -> 0.5F
-            type1 == "Fire" && type2 == "Ice" -> 2F
-            type1 == "Fire" && type2 == "Steel" -> 2F
-            type1 == "Fire" && type2 == "Fire" -> 0.5F
-            type1 == "Fire" && type2 == "Dragon" -> 0.5F
+        val sourceType = type1.substringBefore('|')
+        val targetType = type2.substringBefore('|')
+        val targetType2 = type2.substringAfter('|')
+        fun calculateValue(type1: String, type2:String):Float{
+            return when {
+                // Fire
+                type1 == "Fire" && type2 == "Water" -> 0.5F
+                type1 == "Fire" && type2 == "Grass" -> 2F
+                type1 == "Fire" && type2 == "Bug" -> 2F
+                type1 == "Fire" && type2 == "Rock" -> 0.5F
+                type1 == "Fire" && type2 == "Ice" -> 2F
+                type1 == "Fire" && type2 == "Steel" -> 2F
+                type1 == "Fire" && type2 == "Fire" -> 0.5F
+                type1 == "Fire" && type2 == "Dragon" -> 0.5F
 
-            // Water
-            type1 == "Water" && type2 == "Fire" -> 2F
-            type1 == "Water" && type2 == "Grass" -> 0.5F
-            type1 == "Water" && type2 == "Ground" -> 2F
-            type1 == "Water" && type2 == "Rock" -> 2F
-            type1 == "Water" && type2 == "Water" -> 0.5F
+                // Water
+                type1 == "Water" && type2 == "Fire" -> 2F
+                type1 == "Water" && type2 == "Grass" -> 0.5F
+                type1 == "Water" && type2 == "Ground" -> 2F
+                type1 == "Water" && type2 == "Rock" -> 2F
+                type1 == "Water" && type2 == "Water" -> 0.5F
 
-            // Grass
-            type1 == "Grass" && type2 == "Fire" -> 0.5F
-            type1 == "Grass" && type2 == "Water" -> 2F
-            type1 == "Grass" && type2 == "Ground" -> 2F
-            type1 == "Grass" && type2 == "Rock" -> 2F
-            type1 == "Grass" && type2 == "Bug" -> 0.5F
-            type1 == "Grass" && type2 == "Flying" -> 0.5F
-            type1 == "Grass" && type2 == "Poison" -> 0.5F
-            type1 == "Grass" && type2 == "Grass" -> 0.5F
-            type1 == "Grass" && type2 == "Dragon" -> 0.5F
-            type1 == "Grass" && type2 == "Steel" -> 0.5F
+                // Grass
+                type1 == "Grass" && type2 == "Fire" -> 0.5F
+                type1 == "Grass" && type2 == "Water" -> 2F
+                type1 == "Grass" && type2 == "Ground" -> 2F
+                type1 == "Grass" && type2 == "Rock" -> 2F
+                type1 == "Grass" && type2 == "Bug" -> 0.5F
+                type1 == "Grass" && type2 == "Flying" -> 0.5F
+                type1 == "Grass" && type2 == "Poison" -> 0.5F
+                type1 == "Grass" && type2 == "Grass" -> 0.5F
+                type1 == "Grass" && type2 == "Dragon" -> 0.5F
+                type1 == "Grass" && type2 == "Steel" -> 0.5F
 
-            // Normal
-            type1 == "Normal" && type2 == "Rock" -> 0.5F
-            type1 == "Normal" && type2 == "Ghost" -> 0F
-            type1 == "Normal" && type2 == "Steel" -> 0.5F
-            type1 == "Normal" || type2 == "Normal" -> 1F
+                // Normal
+                type1 == "Normal" && type2 == "Rock" -> 0.5F
+                type1 == "Normal" && type2 == "Ghost" -> 0F
+                type1 == "Normal" && type2 == "Steel" -> 0.5F
+                type1 == "Normal" || type2 == "Normal" -> 1F
 
-            // Bug
-            type1 == "Bug" && type2 == "Fire" -> 0.5F
-            type1 == "Bug" && type2 == "Grass" -> 2F
-            type1 == "Bug" && type2 == "Fighting" -> 0.5F
-            type1 == "Bug" && type2 == "Flying" -> 0.5F
-            type1 == "Bug" && type2 == "Poison" -> 0.5F
-            type1 == "Bug" && type2 == "Rock" -> 0.5F
-            type1 == "Bug" && type2 == "Ghost" -> 0.5F
-            type1 == "Bug" && type2 == "Steel" -> 0.5F
-            type1 == "Bug" && type2 == "Fairy" -> 0.5F
-            type1 == "Bug" && type2 == "Psychic" -> 2F
-            type1 == "Bug" && type2 == "Dark" -> 2F
+                // Bug
+                type1 == "Bug" && type2 == "Fire" -> 0.5F
+                type1 == "Bug" && type2 == "Grass" -> 2F
+                type1 == "Bug" && type2 == "Fighting" -> 0.5F
+                type1 == "Bug" && type2 == "Flying" -> 0.5F
+                type1 == "Bug" && type2 == "Poison" -> 0.5F
+                type1 == "Bug" && type2 == "Rock" -> 0.5F
+                type1 == "Bug" && type2 == "Ghost" -> 0.5F
+                type1 == "Bug" && type2 == "Steel" -> 0.5F
+                type1 == "Bug" && type2 == "Fairy" -> 0.5F
+                type1 == "Bug" && type2 == "Psychic" -> 2F
+                type1 == "Bug" && type2 == "Dark" -> 2F
 
-            // Rock
-            type1 == "Rock" && type2 == "Fire" -> 2F
-            type1 == "Rock" && type2 == "Ice" -> 2F
-            type1 == "Rock" && type2 == "Fighting" -> 0.5F
-            type1 == "Rock" && type2 == "Flying" -> 2F
-            type1 == "Rock" && type2 == "Bug" -> 2F
-            type1 == "Rock" && type2 == "Rock" -> 1F
-            type1 == "Rock" && type2 == "Steel" -> 0.5F
+                // Rock
+                type1 == "Rock" && type2 == "Fire" -> 2F
+                type1 == "Rock" && type2 == "Ice" -> 2F
+                type1 == "Rock" && type2 == "Fighting" -> 0.5F
+                type1 == "Rock" && type2 == "Flying" -> 2F
+                type1 == "Rock" && type2 == "Bug" -> 2F
+                type1 == "Rock" && type2 == "Rock" -> 1F
+                type1 == "Rock" && type2 == "Steel" -> 0.5F
 
-            // Flying
-            type1 == "Flying" && type2 == "Grass" -> 2F
-            type1 == "Flying" && type2 == "Fighting" -> 2F
-            type1 == "Flying" && type2 == "Bug" -> 2F
-            type1 == "Flying" && type2 == "Rock" -> 0.5F
-            type1 == "Flying" && type2 == "Steel" -> 0.5F
-            type1 == "Flying" && type2 == "Electric" -> 0.5F
+                // Flying
+                type1 == "Flying" && type2 == "Grass" -> 2F
+                type1 == "Flying" && type2 == "Fighting" -> 2F
+                type1 == "Flying" && type2 == "Bug" -> 2F
+                type1 == "Flying" && type2 == "Rock" -> 0.5F
+                type1 == "Flying" && type2 == "Steel" -> 0.5F
+                type1 == "Flying" && type2 == "Electric" -> 0.5F
 
-            // Steel
-            type1 == "Steel" && type2 == "Fire" -> 0.5F
-            type1 == "Steel" && type2 == "Water" -> 0.5F
-            type1 == "Steel" && type2 == "Electric" -> 0.5F
-            type1 == "Steel" && type2 == "Ice" -> 2F
-            type1 == "Steel" && type2 == "Rock" -> 2F
-            type1 == "Steel" && type2 == "Steel" -> 0.5F
-            type1 == "Steel" && type2 == "Fairy" -> 2F
+                // Steel
+                type1 == "Steel" && type2 == "Fire" -> 0.5F
+                type1 == "Steel" && type2 == "Water" -> 0.5F
+                type1 == "Steel" && type2 == "Electric" -> 0.5F
+                type1 == "Steel" && type2 == "Ice" -> 2F
+                type1 == "Steel" && type2 == "Rock" -> 2F
+                type1 == "Steel" && type2 == "Steel" -> 0.5F
+                type1 == "Steel" && type2 == "Fairy" -> 2F
 
-            // Electric
-            type1 == "Electric" && type2 == "Water" -> 2F
-            type1 == "Electric" && type2 == "Grass" -> 0.5F
-            type1 == "Electric" && type2 == "Ground" -> 0F
-            type1 == "Electric" && type2 == "Flying" -> 2F
-            type1 == "Electric" && type2 == "Electric" -> 0.5F
-            type1 == "Electric" && type2 == "Dragon" -> 0.5F
+                // Electric
+                type1 == "Electric" && type2 == "Water" -> 2F
+                type1 == "Electric" && type2 == "Grass" -> 0.5F
+                type1 == "Electric" && type2 == "Ground" -> 0F
+                type1 == "Electric" && type2 == "Flying" -> 2F
+                type1 == "Electric" && type2 == "Electric" -> 0.5F
+                type1 == "Electric" && type2 == "Dragon" -> 0.5F
 
-            // Psychic
-            type1 == "Psychic" && type2 == "Fighting" -> 2F
-            type1 == "Psychic" && type2 == "Poison" -> 2F
-            type1 == "Psychic" && type2 == "Steel" -> 0.5F
-            type1 == "Psychic" && type2 == "Psychic" -> 0.5F
-            type1 == "Psychic" && type2 == "Dark" -> 0F
+                // Psychic
+                type1 == "Psychic" && type2 == "Fighting" -> 2F
+                type1 == "Psychic" && type2 == "Poison" -> 2F
+                type1 == "Psychic" && type2 == "Steel" -> 0.5F
+                type1 == "Psychic" && type2 == "Psychic" -> 0.5F
+                type1 == "Psychic" && type2 == "Dark" -> 0F
 
-            // Dark
-            type1 == "Dark" && type2 == "Fighting" -> 0.5F
-            type1 == "Dark" && type2 == "Psychic" -> 2F
-            type1 == "Dark" && type2 == "Ghost" -> 2F
-            type1 == "Dark" && type2 == "Dark" -> 0.5F
-            type1 == "Dark" && type2 == "Fairy" -> 0.5F
+                // Dark
+                type1 == "Dark" && type2 == "Fighting" -> 0.5F
+                type1 == "Dark" && type2 == "Psychic" -> 2F
+                type1 == "Dark" && type2 == "Ghost" -> 2F
+                type1 == "Dark" && type2 == "Dark" -> 0.5F
+                type1 == "Dark" && type2 == "Fairy" -> 0.5F
 
-            // Ghost
-            type1 == "Ghost" && type2 == "Normal" -> 0F
-            type1 == "Ghost" && type2 == "Psychic" -> 2F
-            type1 == "Ghost" && type2 == "Ghost" -> 2F
-            type1 == "Ghost" && type2 == "Dark" -> 0.5F
+                // Ghost
+                type1 == "Ghost" && type2 == "Normal" -> 0F
+                type1 == "Ghost" && type2 == "Psychic" -> 2F
+                type1 == "Ghost" && type2 == "Ghost" -> 2F
+                type1 == "Ghost" && type2 == "Dark" -> 0.5F
 
-            // Fairy
-            type1 == "Fairy" && type2 == "Fire" -> 0.5F
-            type1 == "Fairy" && type2 == "Fighting" -> 2F
-            type1 == "Fairy" && type2 == "Dragon" -> 2F
-            type1 == "Fairy" && type2 == "Dark" -> 2F
-            type1 == "Fairy" && type2 == "Poison" -> 0.5F
-            type1 == "Fairy" && type2 == "Steel" -> 0.5F
+                // Fairy
+                type1 == "Fairy" && type2 == "Fire" -> 0.5F
+                type1 == "Fairy" && type2 == "Fighting" -> 2F
+                type1 == "Fairy" && type2 == "Dragon" -> 2F
+                type1 == "Fairy" && type2 == "Dark" -> 2F
+                type1 == "Fairy" && type2 == "Poison" -> 0.5F
+                type1 == "Fairy" && type2 == "Steel" -> 0.5F
 
-            // Ground
-            type1 == "Ground" && type2 == "Fire" -> 2F
-            type1 == "Ground" && type2 == "Electric" -> 2F
-            type1 == "Ground" && type2 == "Grass" -> 0.5F
-            type1 == "Ground" && type2 == "Ice" -> 0.5F
-            type1 == "Ground" && type2 == "Poison" -> 2F
-            type1 == "Ground" && type2 == "Rock" -> 2F
-            type1 == "Ground" && type2 == "Bug" -> 0.5F
-            type1 == "Ground" && type2 == "Steel" -> 2F
-            type1 == "Ground" && type2 == "Flying" -> 0F
+                // Ground
+                type1 == "Ground" && type2 == "Fire" -> 2F
+                type1 == "Ground" && type2 == "Electric" -> 2F
+                type1 == "Ground" && type2 == "Grass" -> 0.5F
+                type1 == "Ground" && type2 == "Ice" -> 0.5F
+                type1 == "Ground" && type2 == "Poison" -> 2F
+                type1 == "Ground" && type2 == "Rock" -> 2F
+                type1 == "Ground" && type2 == "Bug" -> 0.5F
+                type1 == "Ground" && type2 == "Steel" -> 2F
+                type1 == "Ground" && type2 == "Flying" -> 0F
 
-            // Dragon
-            type1 == "Dragon" && type2 == "Dragon" -> 2F
-            type1 == "Dragon" && type2 == "Steel" -> 0.5F
-            type1 == "Dragon" && type2 == "Fairy" -> 0.5F
-            type1 == "Dragon" && type2 == "Fire" -> 0.5F
-            type1 == "Dragon" && type2 == "Water" -> 0.5F
-            type1 == "Dragon" && type2 == "Electric" -> 0.5F
+                // Dragon
+                type1 == "Dragon" && type2 == "Dragon" -> 2F
+                type1 == "Dragon" && type2 == "Steel" -> 0.5F
+                type1 == "Dragon" && type2 == "Fairy" -> 0.5F
+                type1 == "Dragon" && type2 == "Fire" -> 0.5F
+                type1 == "Dragon" && type2 == "Water" -> 0.5F
+                type1 == "Dragon" && type2 == "Electric" -> 0.5F
 
 
 
-            else -> 1F
+                else -> 1F
+            }
+        } //List of values for effectivity
+        when(targetType2 == targetType){
+            true -> {
+                //Target pokemon is single type
+                val result = calculateValue(sourceType, targetType)
+                return result
+            }
+            false -> {
+                //Target pokemon is dual type
+                val result = effectivenessValue(sourceType,targetType) * effectivenessValue(sourceType,targetType2)
+                return result
+            }
         }
+
     }
 
 }
-data class battleResult(var damageAmount: Int, var isCritical: Boolean, var effectiveVal: Float,var sourcePokemon: String, var targetPokemon:String)
+data class battleResult(var damageAmount: Int, var isCritical: Boolean, var effectiveVal: Float,var sourcePokemon: String, var targetPokemon:String, var isNotAffected: Boolean = false)
 data class playerChoiceData(var chosenMove: PokemonMoveset?, var currentPokemonIndex: Int, var switchToIndex: Int?, var isTrainerDefeated: Boolean = false, var isAI: Boolean = false)
 data class battleData(var playerWin: Boolean, var opponentWin: Boolean, var totalTurns: Int)

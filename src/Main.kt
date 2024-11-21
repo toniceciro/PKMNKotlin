@@ -1,3 +1,4 @@
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
@@ -90,7 +91,6 @@ fun quickBattle(trainer: TrainerClass){
     println("+---QUICK BATTLE END---+")
     return
 }
-
 fun stressTest(turnCounts:Int){
     battleSpeed = 0
     println("+-------------+")
@@ -128,6 +128,7 @@ fun stressTest(turnCounts:Int){
     println("Max Turn Count: ${totalTurnCount.max()}")
     battleSpeed = 1000
 }
+
 class TrainerList<TrainerClass>(vararg trainer: TrainerClass){
 
     private val elements = trainer.toMutableList()

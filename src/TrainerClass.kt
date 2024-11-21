@@ -1,9 +1,9 @@
 import com.sun.tools.javac.Main
 
-class TrainerClass(name:String, isAI:Boolean = false) {
+class TrainerClass(name:String, aIFlag:Boolean = false) {
 
     val trainerName = name
-    val isAI = isAI
+    val isAI = aIFlag
     var currentPokemon = PokemonList<PokemonClass>()
 
     fun appraisePokemon(pokemonIndex: Int){
@@ -11,16 +11,12 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         selectedPokemon.appraisePokemon()
     }
 
-    fun checkIfFainted(pokemonIndex: Int):Boolean{
-        val selectedPokemon = currentPokemon.getPokemon(pokemonIndex)
-        return selectedPokemon.checkIfFainted()
-    }
     fun listPokemon(){
         var x = 0
         var pokemonLoop: PokemonClass
         while (x < currentPokemon.size()){
             pokemonLoop = currentPokemon.getPokemon(x)
-            println("${x} - ${pokemonLoop.pokemonName} (LV ${pokemonLoop.getLevel()}) (${pokemonLoop.pokemonType})")
+            println("$x - ${pokemonLoop.pokemonName} (LV ${pokemonLoop.getLevel()}) (${pokemonLoop.pokemonType})")
             x++
         }
     }
@@ -134,7 +130,7 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveGrassAccuracyList = listOf(100, 95, 100, 100, 100, 100, 90, 100, 100, 100)
         val GrassPokemonList = listOf(pokemonNameGrassList, pokemonMoveGrassList, pokemonPowerGrassList, pokemonMoveGrassPPList, pokemonMoveGrassAccuracyList, pokemonTypeGrassList)
 
-
+        //Bug
         val pokemonNameBugList = listOf(
             "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Paras",
             "Parasect", "Venonat", "Venomoth", "Scyther", "Pinsir", "Ledyba",
@@ -155,7 +151,7 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveBugAccuracyList = listOf(100, 100, 100, 100, 100, 100, 100, 100, 95, 100)
         val BugPokemonList = listOf(pokemonNameBugList, pokemonMoveBugList, pokemonPowerBugList, pokemonMoveBugPPList, pokemonMoveBugAccuracyList, pokemonTypeBugList)
 
-
+        //Rock
         val pokemonNameRockList = listOf(
             "Geodude", "Graveler", "Golem", "Onix", "Rhyhorn", "Rhydon", "Omanyte",
             "Omastar", "Kabuto", "Kabutops", "Aerodactyl", "Sudowoodo", "Lileep",
@@ -176,7 +172,7 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveRockAccuracyList = listOf(90, 90, 80, 95, 100, 100, 100, 90, 80, 100)
         val RockPokemonList = listOf(pokemonNameRockList, pokemonMoveRockList, pokemonPowerRockList, pokemonMoveRockPPList, pokemonMoveRockAccuracyList, pokemonTypeRockList)
 
-
+        //Flying
         val pokemonNameFlyingList = listOf(
             "Pidgey", "Pidgeotto", "Pidgeot", "Spearow", "Fearow", "Zubat", "Golbat",
             "Farfetch'd", "Doduo", "Dodrio", "Scyther", "Aerodactyl", "Hoothoot",
@@ -370,7 +366,6 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveDragonAccuracyList = listOf(100, 90, 100, 100, 90, 75, 100, 90, 100, 90)
         val DragonPokemonList = listOf(pokemonNameDragonList, pokemonMoveDragonList, pokemonPowerDragonList, pokemonMoveDragonPPList, pokemonMoveDragonAccuracyList, pokemonTypeDragonList)
 
-
         //Poison
         val pokemonNamePoisonList = listOf(
             "Ekans", "Arbok", "Nidoran♀", "Nidorina", "Nidoqueen", "Nidoran♂", "Nidorino",
@@ -413,9 +408,31 @@ class TrainerClass(name:String, isAI:Boolean = false) {
         val pokemonMoveIceAccuracyList = listOf(100, 70, 100, 100, 100, 90, 95, 100, 90, 100)
         val IcePokemonList = listOf(pokemonNameIceList, pokemonMoveIceList, pokemonPowerIceList, pokemonMoveIcePPList, pokemonMoveIceAccuracyList, pokemonTypeIceList)
 
+        //Fighting
+        val pokemonNameFightingList = listOf(
+            "Machop", "Machoke", "Machamp", "Mankey", "Primeape", "Hitmonlee", "Hitmonchan",
+            "Hitmontop", "Riolu", "Lucario", "Throh", "Sawk", "Scraggy",
+            "Scrafty", "Pancham", "Pangoro", "Hawlucha", "Crabrawler", "Crabominable",
+            "Stufful", "Bewear", "Falinks", "Clobbopus", "Grapploct", "Zamazenta",
+            "Zamazenta (Crowned)", "Cobalion", "Terrakion", "Virizion", "Keldeo"
+        )
+        val pokemonTypeFightingList = listOf(
+            "Fighting", "Fighting", "Fighting", "Fighting", "Fighting", "Fighting", "Fighting",
+            "Fighting", "Fighting", "Fighting|Steel", "Fighting", "Fighting", "Dark|Fighting",
+            "Dark|Fighting", "Fighting", "Fighting|Dark", "Fighting|Flying", "Fighting", "Fighting|Ice",
+            "Normal|Fighting", "Normal|Fighting", "Fighting", "Fighting", "Fighting", "Fighting",
+            "Fighting|Steel", "Steel|Fighting", "Rock|Fighting", "Grass|Fighting", "Water|Fighting"
+        )
+        val pokemonMoveFightingList = listOf("Karate Chop", "Low Sweep", "Close Combat", "Cross Chop", "Dynamic Punch", "Submission", "Reversal", "Superpower", "Focus Blast", "Aura Sphere")
+        val pokemonPowerFightingList = listOf(50, 65, 120, 100, 100, 80, 100, 120, 120, 80)
+        val pokemonMoveFightingPPList = listOf(25, 20, 5, 5, 5, 25, 15, 5, 5, 20)
+        val pokemonMoveFightingAccuracyList = listOf(100, 100, 100, 80, 50, 80, 100, 100, 70, 100)
+        val FightingPokemonList = listOf(pokemonNameFightingList, pokemonMoveFightingList, pokemonPowerFightingList, pokemonMoveFightingPPList, pokemonMoveFightingAccuracyList, pokemonTypeFightingList)
+
+
         //Main Lists
-        val MainPokemonList = listOf(FirePokemonList, WaterPokemonList, GrassPokemonList, NormalPokemonList, BugPokemonList, RockPokemonList, FlyingPokemonList, SteelPokemonList, ElectricPokemonList, PsychicPokemonList, DarkPokemonList, GhostPokemonList, FairyPokemonList, GroundPokemonList, DragonPokemonList,PoisonPokemonList,IcePokemonList)
-        val PokemonTypeList = listOf("Fire","Water","Grass","Normal","Bug","Rock","Flying","Steel","Electric","Psychic","Dark","Ghost","Fairy","Ground", "Dragon","Poison","Ice")
+        val MainPokemonList = listOf(FirePokemonList, WaterPokemonList, GrassPokemonList, NormalPokemonList, BugPokemonList, RockPokemonList, FlyingPokemonList, SteelPokemonList, ElectricPokemonList, PsychicPokemonList, DarkPokemonList, GhostPokemonList, FairyPokemonList, GroundPokemonList, DragonPokemonList,PoisonPokemonList,IcePokemonList,FightingPokemonList)
+        val PokemonTypeList = listOf("Fire","Water","Grass","Normal","Bug","Rock","Flying","Steel","Electric","Psychic","Dark","Ghost","Fairy","Ground", "Dragon","Poison","Ice","Fighting")
 
         var i = 0
         while (i < pokemonAmount){
