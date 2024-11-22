@@ -7,7 +7,7 @@ class PokemonClass(Name: String, elementType: String, level: Int) {
     val pokemonType = elementType
     var pokemonLevel = level
     var pokemonMoveList =  PokemonMoveList<PokemonMoveset>()
-
+    private var status = "OK"
 
     //Base Stats (Average)
     private val baseHP = (68..90).random()
@@ -69,7 +69,12 @@ class PokemonClass(Name: String, elementType: String, level: Int) {
     fun checkHP():pokemonHealthValues{
         return pokemonHealthValues(pokemonCurrentHP.toInt(), pokemonMaxHP.toInt())
     }
-
+    fun checkStatus():String{
+        return status
+    }
+    fun setStatus(newStatus: String){
+        status = newStatus
+    }
     fun getLevel():Int{
         return pokemonLevel
     }

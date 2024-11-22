@@ -553,7 +553,7 @@ class BattleHandler {
             }
             false -> {
                 //Target pokemon is dual type
-                val result = effectivenessValue(sourceType,targetType) * effectivenessValue(sourceType,targetType2)
+                val result = calculateValue(sourceType,targetType) * calculateValue(sourceType,targetType2)
                 return result
             }
         }

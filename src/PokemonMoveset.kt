@@ -1,6 +1,6 @@
 
 
-class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPoints: Int, accuracyLevel: Int, modifiesStats: Boolean = false) {
+class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPoints: Int, accuracyLevel: Int,isSpecialAttack:Boolean = false, modifiesStats: Boolean = false, inflictsStatus: Boolean = false) {
     private var name = moveName
     private var type = moveType
     private var power = basePower
