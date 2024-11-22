@@ -19,6 +19,7 @@ class PokemonDataGenerator() {
     val pokemonBugCSV = DataFrame.read("PKData/PokemonBugList.csv")
     val pokemonGhostCSV = DataFrame.read("PKData/PokemonGhostList.csv")
     val pokemonSteelCSV = DataFrame.read("PKData/PokemonSteelList.csv")
+    val pokemonNormalCSV = DataFrame.read("PKData/PokemonNormalList.csv")
 
 
 
@@ -522,14 +523,15 @@ class PokemonDataGenerator() {
              pokemonRockCSV,
              pokemonBugCSV,
              pokemonGhostCSV,
-             pokemonSteelCSV
+             pokemonSteelCSV,
+             pokemonNormalCSV
          )
          val masterPokemonList = mutableListOf<List<PokemonClass>>()
          while (x < masterTypeList.size){
              masterPokemonList.add(parsePokemonData(parsePokemonCSVtoList(masterTypeList[x])[0],parsePokemonCSVtoList(masterTypeList[x])[1],parsePokemonStatsCSVtoList(masterTypeList[x]),100))
              x++
          }
-        println("$masterPokemonList")
+        println("Loaded ${masterPokemonList.size} Pokemon Types from CSV")
     }
     private fun parsePokemonData(nameList: List<String>, typeList:List<String>,statList:List<List<Int>>, level: Int = 100):List<PokemonClass>{
         val pokemonList = mutableListOf<PokemonClass>()
@@ -537,7 +539,6 @@ class PokemonDataGenerator() {
         var x = 0
         while(x < nameList.size){
             pokemonList.add(PokemonClass(nameList[x],typeList[x], level,statList[0][x],statList[1][x],statList[2][x],statList[3][x],statList[4][x],statList[5][x]))
-            println("${pokemonList.get(x).pokemonName} (${pokemonList.get(x).pokemonType}) is created! $x")
             x++
         }
         return pokemonList
@@ -599,7 +600,6 @@ class PokemonDataGenerator() {
             pokemonTypeList.add(row[1].toString())
             x++
         }
-        println("nameSize ${pokemonNameList.size} typeSize ${pokemonTypeList.size}")
         return listOf(pokemonNameList,pokemonTypeList)
     }
     private fun parsePokemonStatsCSVtoList(csvFile: AnyFrame):List<List<Int>>{
@@ -617,7 +617,6 @@ class PokemonDataGenerator() {
             pokemonSPDList.add(row[6].toString().toInt())
             pokemonSPEList.add(row[7].toString().toInt())
         }
-        println("[${pokemonHPList.size}, ${pokemonATKList.size}, ${pokemonDEFList.size}, ${pokemonSPAList.size}, ${pokemonSPDList.size}, ${pokemonSPEList.size}]")
         return listOf(pokemonHPList,pokemonATKList,pokemonDEFList,pokemonSPAList,pokemonSPDList,pokemonSPEList)
     }
 }
