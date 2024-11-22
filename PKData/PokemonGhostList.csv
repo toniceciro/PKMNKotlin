@@ -1,0 +1,49 @@
+Pokemon,Type,baseHP,baseATK,baseDEF,baseSPA,baseSPD,baseSPE
+Gastly,Ghost|Poison,30,35,30,100,35,80
+Haunter,Ghost|Poison,45,50,45,115,55,95
+Gengar,Ghost|Poison,60,65,60,130,75,110
+Misdreavus,Ghost,60,60,60,85,85,85
+Shedinja,Bug|Ghost,1,90,45,30,30,40
+Sableye,Dark|Ghost,50,75,75,65,65,50
+Shuppet,Ghost,44,75,35,63,33,45
+Banette,Ghost,64,115,65,83,63,65
+Duskull,Ghost,20,40,90,30,90,25
+Dusclops,Ghost,40,70,130,60,130,25
+Drifloon,Ghost|Flying,90,50,34,60,44,70
+Drifblim,Ghost|Flying,150,80,44,90,54,80
+Mismagius,Ghost,60,60,60,105,105,105
+Spiritomb,Ghost|Dark,50,92,108,92,108,35
+Dusknoir,Ghost,45,100,135,65,135,45
+Froslass,Ice|Ghost,70,80,70,80,70,110
+Rotom,Electric|Ghost,50,50,77,95,77,91
+Giratina,Ghost|Dragon,150,100,120,100,120,90
+Yamask,Ghost,38,30,85,55,65,30
+Cofagrigus,Ghost,58,50,145,95,105,30
+Frillish,Water|Ghost,55,40,50,65,85,40
+Jellicent,Water|Ghost,100,60,70,85,105,60
+Litwick,Ghost|Fire,50,30,55,65,55,20
+Lampent,Ghost|Fire,60,40,60,95,60,55
+Chandelure,Ghost|Fire,60,55,90,145,90,80
+Golett,Ground|Ghost,59,74,50,35,50,35
+Golurk,Ground|Ghost,89,124,80,55,80,55
+Phantump,Ghost|Grass,43,70,48,50,60,38
+Trevenant,Ghost|Grass,85,110,76,65,82,56
+Pumpkaboo,Ghost|Grass,49,66,70,44,55,51
+Gourgeist,Ghost|Grass,65,90,122,58,75,84
+Hoopa (Confined),Psychic|Ghost,80,110,60,150,130,70
+Decidueye,Grass|Ghost,78,107,75,100,100,70
+Oricorio (Sensu Style),Ghost|Flying,75,70,70,98,70,93
+Sandygast,Ghost|Ground,55,55,80,70,45,15
+Palossand,Ghost|Ground,85,75,110,100,75,35
+Mimikyu,Ghost|Fairy,55,90,80,50,105,96
+Dhelmise,Ghost|Grass,70,131,100,86,90,40
+Blacephalon,Fire|Ghost,53,127,53,151,79,107
+Cursola,Ghost,60,95,50,145,130,30
+Spectrier,Ghost,100,65,60,145,80,130
+Annihilape,Fighting|Ghost,110,115,80,50,90,90
+Flutter Mane,Ghost|Fairy,55,135,55,135,135,135
+Houndstone,Ghost,72,101,100,50,97,68
+Polteageist,Ghost,60,65,65,134,114,70
+Sinistea,Ghost,40,45,45,74,54,50
+Dragapult,Dragon|Ghost,88,120,75,100,75,142
+Hisui Zoroark,Normal|Ghost,55,115,60,115,60,105

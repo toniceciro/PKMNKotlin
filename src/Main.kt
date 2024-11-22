@@ -1,3 +1,5 @@
+import org.jetbrains.kotlinx.dataframe.DataFrame
+import org.jetbrains.kotlinx.dataframe.io.read
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -44,18 +46,13 @@ fun main() {
                 val trainerName2 = readln()
                 multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false))
             }
+            5 -> {
+                PokemonDataGenerator().generateCSVTest()
+                }
+            }
         }
     }
-    fun listTrainer(){
-        var x = 0
-        var trainerLoop: TrainerClass
-        while (x < trainerData.size()){
-            trainerLoop = trainerData.loadTrainer(x)
-            println("$x - ${trainerLoop.trainerName}")
-            x++
-        }
-    }
-}
+
 
 fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
     println("+---MULTIPLAYER BATTLE---+")

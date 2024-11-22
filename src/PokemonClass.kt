@@ -1,21 +1,42 @@
 import PokemonMoveset
 import kotlin.math.roundToInt
 
-class PokemonClass(Name: String, elementType: String, level: Int) {
+class PokemonClass {
+    var pokemonName: String = "MissingNo."
+    var pokemonType: String = "Bird"
+    var pokemonLevel: Int = 0
+    private var baseHP: Int = 0
+    private var baseATK: Int = 0
+    private var baseDEF: Int = 0
+    private var baseSPA: Int = 0
+    private var baseSPD: Int = 0
+    private var baseSPE: Int = 0
+    constructor(Name: String, elementType: String, level: Int){
+        this.pokemonName = Name
+        this.pokemonType = elementType
+        this.pokemonLevel = level
+        this.baseHP = (68..90).random()
+        this.baseATK = (75..83).random()
+        this.baseDEF = (73..83).random()
+        this.baseSPA = (69..83).random()
+        this.baseSPD = (69..83).random()
+        this.baseSPE = (66..78).random()
+    }
+    constructor(Name: String, elementType: String, level: Int, baseHP: Int, baseATK:Int, baseDEF:Int, baseSPA:Int, baseSPD:Int, baseSPE:Int):this(Name,elementType,level){
+        this.baseHP = baseHP
+        this.baseATK = baseATK
+        this.baseDEF = baseDEF
+        this.baseSPA = baseSPA
+        this.baseSPD = baseSPD
+        this.baseSPE = baseSPE
+    }
     //Attributes
-    val pokemonName = Name
-    val pokemonType = elementType
-    var pokemonLevel = level
-    var pokemonMoveList =  PokemonMoveList<PokemonMoveset>()
-    private var status = "OK"
 
     //Base Stats (Average)
-    private val baseHP = (68..90).random()
-    private val baseATK = (75..83).random()
-    private val baseDEF = (73..83).random()
-    private val baseSPA = (69..83).random()
-    private val baseSPD = (69..83).random()
-    private val baseSPE = (66..78).random()
+
+
+    var pokemonMoveList =  PokemonMoveList<PokemonMoveset>()
+    private var status = "OK"
 
     //IV values, randomized
     private val IVHP = (0..31).random()
@@ -34,13 +55,13 @@ class PokemonClass(Name: String, elementType: String, level: Int) {
     private val EVSPE = (0..20).random()
 
     //Stat calculation
-    var pokemonMaxHP = ((0.01 * (2 * baseHP + IVHP + (0.25 * EVHP).roundToInt()) * level)+level+10)
+    var pokemonMaxHP = ((0.01 * (2 * baseHP + IVHP + (0.25 * EVHP).roundToInt()) * pokemonLevel)+pokemonLevel+10)
     var pokemonCurrentHP = pokemonMaxHP
-    var pokemonATK = (0.01 * (2 * baseATK + IVATK + (0.25 * EVATK)) * level).roundToInt() + 5
-    var pokemonDEF = (0.01 * (2 * baseDEF + IVDEF + (0.25 * EVDEF)) * level).roundToInt() + 5
-    var pokemonSPA = (0.01 * (2 * baseSPA + IVSPA + (0.25 * EVSPA)) * level).roundToInt() + 5
-    var pokemonSPD = (0.01 * (2 * baseSPD + IVSPD + (0.25 * EVSPD)) * level).roundToInt() + 5
-    var pokemonSPE = (0.01 * (2 * baseSPE + IVSPE + (0.25 * EVSPE)) * level).roundToInt() + 5
+    var pokemonATK = (0.01 * (2 * baseATK + IVATK + (0.25 * EVATK)) * pokemonLevel).roundToInt() + 5
+    var pokemonDEF = (0.01 * (2 * baseDEF + IVDEF + (0.25 * EVDEF)) * pokemonLevel).roundToInt() + 5
+    var pokemonSPA = (0.01 * (2 * baseSPA + IVSPA + (0.25 * EVSPA)) * pokemonLevel).roundToInt() + 5
+    var pokemonSPD = (0.01 * (2 * baseSPD + IVSPD + (0.25 * EVSPD)) * pokemonLevel).roundToInt() + 5
+    var pokemonSPE = (0.01 * (2 * baseSPE + IVSPE + (0.25 * EVSPE)) * pokemonLevel).roundToInt() + 5
 
     //Pokemon Function
     fun appraisePokemon(){

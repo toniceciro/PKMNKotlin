@@ -1,0 +1,49 @@
+Pokemon,Type,baseHP,baseATK,baseDEF,baseSPA,baseSPD,baseSPE
+Articuno,Ice|Flying,90,85,100,95,125,85
+Dewgong,Water|Ice,90,70,80,70,95,70
+Cloyster,Water|Ice,50,95,180,85,45,70
+Jynx,Ice|Psychic,65,50,35,115,95,95
+Lapras,Water|Ice,130,85,80,85,95,60
+Sneasel,Dark|Ice,55,95,55,35,75,115
+Swineub,Ice|Ground,50,50,40,30,30,50
+Piloswine,Ice|Ground,100,100,80,60,60,50
+Delibird,Ice|Flying,45,55,45,65,45,75
+Smoochum,Ice|Psychic,45,30,15,85,65,65
+Snorunt,Ice,50,50,50,50,50,50
+Glalie,Ice,80,80,80,80,80,80
+Spheal,Water|Ice,70,40,50,55,50,25
+Sealeo,Water|Ice,90,60,70,75,70,45
+Walrein,Water|Ice,110,80,90,95,90,65
+Regice,Ice,80,50,100,100,200,50
+Glaceon,Ice,65,60,110,130,95,65
+Froslass,Ice|Ghost,70,80,70,80,70,110
+Vanillite,Ice,36,50,50,65,60,44
+Vanillish,Ice,51,65,65,80,75,59
+Vanilluxe,Ice,71,95,85,110,95,79
+Cubchoo,Ice,55,70,40,60,40,40
+Beartic,Ice,95,130,80,70,80,50
+Cryogonal,Ice,80,50,50,95,135,105
+Amaura,Rock|Ice,77,59,50,67,63,46
+Aurorus,Rock|Ice,123,77,72,99,92,58
+Bergmite,Ice,55,69,85,32,35,28
+Avalugg,Ice,95,117,184,44,46,28
+Alolan Sandslash,Ice|Steel,75,100,120,25,65,65
+Alolan Ninetales,Ice|Fairy,73,67,75,81,100,109
+Mamoswine,Ice|Ground,110,130,80,70,60,80
+Frosmoth,Ice|Bug,70,65,60,125,90,65
+Darmanitan (Galarian),Ice,105,140,55,30,55,95
+Arctovish,Water|Ice,90,90,100,80,90,55
+Arctozolt,Electric|Ice,90,100,90,90,80,55
+Calyrex (Ice Rider),Psychic|Ice,100,165,150,85,130,50
+Eiscue,Ice,75,80,110,65,90,50
+Galarian Mr. Mime,Ice|Psychic,50,65,65,90,90,100
+Mr. Rime,Ice|Psychic,80,85,75,110,100,70
+Ice Rider Calyrex,Psychic|Ice,100,165,150,85,130,50
+Cetoddle,Ice,108,68,45,30,40,43
+Cetitan,Ice,170,113,65,45,55,73
+Chien-Pao,Dark|Ice,80,120,80,90,65,135
+Glastrier,Ice,100,145,130,65,110,30
+Iron Bundle,Ice|Water,56,80,114,124,60,136
+Scream Tail,Ice|Fairy,115,65,99,65,115,111
+Walking Wake,Ice|Dragon,99,83,91,125,83,109
+Paldea Tauros (Blaze),Ice,75,110,105,30,70,100
