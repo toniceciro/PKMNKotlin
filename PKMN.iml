@@ -12,5 +12,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.dataframe.compiler.plugin.all" level="project" />
+    <orderEntry type="library" name="jetbrains.kotlin.maven.serialization" level="project" />
   </component>
 </module>

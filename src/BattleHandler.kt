@@ -117,7 +117,7 @@ class BattleHandler {
     //Main battle functions
     private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:playerChoiceData, opponentChoice: playerChoiceData):playerChoiceData{
         if(sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkIfFainted()){
-            println("${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName} fainted!")
+            println("${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} fainted!")
             sourceTrainer.currentPokemon.removePokemon(playerChoice.currentPokemonIndex)
             if(!sourceTrainer.currentPokemon.isEmpty()){
                 if (playerChoice.isAI == true) {
@@ -180,7 +180,7 @@ class BattleHandler {
     }
     private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: playerChoiceData){
         sourceChoice.chosenMove?.removePP()
-        println("${sourcePokemon.pokemonName} used ${sourceChoice.chosenMove?.getName()}!")
+        println("${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!")
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
@@ -199,15 +199,15 @@ class BattleHandler {
         }
         when (battleResult.damageAmount <= 0){
             false -> {
-                println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.pokemonName}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
+                println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.getName()}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
                 Thread.sleep(battleSpeed)
             }
             (battleResult.isNotAffected) -> {
-                println("It doesn't affect ${targetPokemon.pokemonName}...")
+                println("It doesn't affect ${targetPokemon.getName()}...")
                 Thread.sleep(battleSpeed)
             }
             else -> {
-                println("${sourcePokemon.pokemonName}'s attack missed!")
+                println("${sourcePokemon.getName()}'s attack missed!")
                 Thread.sleep(battleSpeed)
             }
         }
@@ -218,7 +218,7 @@ class BattleHandler {
         if(playerChoice.switchToIndex != null){
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
-            println("${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName}!")
+            println("${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!")
             Thread.sleep(battleSpeed)
             return playerChoice
         }
@@ -242,7 +242,7 @@ class BattleHandler {
         currentChoice.chosenMove = null; currentChoice.switchToIndex = null
         while(  (currentChoice.chosenMove == null && currentChoice.switchToIndex == null)  ){
             println("+--------------------+")
-            println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonName} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
+            println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
             println("${trainerData.trainerName}, what will you do?")
             println("+-----------------+")
             println("|0 - FIGHT | 1 - Pokemon |")
@@ -264,7 +264,7 @@ class BattleHandler {
     }
     private fun fightSelector(trainerData: TrainerClass, pokemonIndex: Int): PokemonMoveset?{
         println("+--------------------+")
-        println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonName} do?")
+        println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
         println("+-----------------+")
         val moveList = trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList
         println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} |")
@@ -391,7 +391,7 @@ class BattleHandler {
         val baseDamage = basePower * STABvalue * effectivenessValue * critValue * listOf(0.85F,1F).random()
         val totalDamage = (modifier1 * modifier2) * baseDamage
         //Add to battleresult calc
-        val result = battleResult(totalDamage.toInt(), critStatus, effectivenessValue,sourcePokemon.pokemonName,targetPokemon.pokemonName,isNotAffected)
+        val result = battleResult(totalDamage.toInt(), critStatus, effectivenessValue,sourcePokemon.getName(),targetPokemon.getName(),isNotAffected)
         return result
     }
     private fun isStab(sourceMoveType: String, sourcePokemonType:String): Boolean{

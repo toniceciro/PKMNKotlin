@@ -1,5 +1,3 @@
-import com.sun.tools.javac.Main
-
 class TrainerClass(name:String, aIFlag:Boolean = false) {
 
     val trainerName = name
@@ -16,7 +14,7 @@ class TrainerClass(name:String, aIFlag:Boolean = false) {
         var pokemonLoop: PokemonClass
         while (x < currentPokemon.size()){
             pokemonLoop = currentPokemon.getPokemon(x)
-            println("$x - ${pokemonLoop.pokemonName} (LV ${pokemonLoop.getLevel()}) (${pokemonLoop.pokemonType})")
+            println("$x - ${pokemonLoop.getName()} (LV ${pokemonLoop.getLevel()}) (${pokemonLoop.pokemonType})")
             x++
         }
     }

@@ -1,42 +1,18 @@
-import PokemonMoveset
 import kotlin.math.roundToInt
 
-class PokemonClass {
-    var pokemonName: String = "MissingNo."
-    var pokemonType: String = "Bird"
-    var pokemonLevel: Int = 0
-    private var baseHP: Int = 0
-    private var baseATK: Int = 0
-    private var baseDEF: Int = 0
-    private var baseSPA: Int = 0
-    private var baseSPD: Int = 0
-    private var baseSPE: Int = 0
-    constructor(Name: String, elementType: String, level: Int){
-        this.pokemonName = Name
-        this.pokemonType = elementType
-        this.pokemonLevel = level
-        this.baseHP = (68..90).random()
-        this.baseATK = (75..83).random()
-        this.baseDEF = (73..83).random()
-        this.baseSPA = (69..83).random()
-        this.baseSPD = (69..83).random()
-        this.baseSPE = (66..78).random()
-    }
-    constructor(Name: String, elementType: String, level: Int, baseHP: Int, baseATK:Int, baseDEF:Int, baseSPA:Int, baseSPD:Int, baseSPE:Int):this(Name,elementType,level){
-        this.baseHP = baseHP
-        this.baseATK = baseATK
-        this.baseDEF = baseDEF
-        this.baseSPA = baseSPA
-        this.baseSPD = baseSPD
-        this.baseSPE = baseSPE
-    }
-    //Attributes
+class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: Int? = null, baseInitATK:Int? = null, baseInitDEF:Int? = null, baseInitSPA:Int? = null, baseInitSPD:Int? = null, baseInitSPE:Int? = null){
+    var pokemonName: String = Name
+    var pokemonType: String = elementType
+    var pokemonLevel: Int = level
+    private var baseHP: Int = baseInitHP?:(68..90).random()
+    private var baseATK: Int = baseInitATK?:(75..83).random()
+    private var baseDEF: Int = baseInitDEF?:(73..83).random()
+    private var baseSPA: Int = baseInitSPA?:(69..83).random()
+    private var baseSPD: Int = baseInitSPD?:(69..83).random()
+    private var baseSPE: Int = baseInitSPE?:(66..78).random()
+    private val shinyValue = (0..8191).random()
+    private val shinyIndicator = (0..8191).random()
 
-    //Base Stats (Average)
-
-
-    var pokemonMoveList =  PokemonMoveList<PokemonMoveset>()
-    private var status = "OK"
 
     //IV values, randomized
     private val IVHP = (0..31).random()
@@ -54,6 +30,8 @@ class PokemonClass {
     private val EVSPD = (0..20).random()
     private val EVSPE = (0..20).random()
 
+    var pokemonMoveList =  PokemonMoveList<PokemonMoveset>()
+    private var status = "OK"
     //Stat calculation
     var pokemonMaxHP = ((0.01 * (2 * baseHP + IVHP + (0.25 * EVHP).roundToInt()) * pokemonLevel)+pokemonLevel+10)
     var pokemonCurrentHP = pokemonMaxHP
@@ -87,6 +65,12 @@ class PokemonClass {
             in (150..186) -> println("This Pokémon has outstanding potential overall. (${totalIV})")
         }
     }
+    fun getName():String{
+        if (shinyValue == shinyIndicator){
+            return ".°˖✧${pokemonName}✧˖°."
+        }
+        else return pokemonName
+    }
     fun checkHP():pokemonHealthValues{
         return pokemonHealthValues(pokemonCurrentHP.toInt(), pokemonMaxHP.toInt())
     }
@@ -103,7 +87,6 @@ class PokemonClass {
     fun checkIfFainted(): Boolean{
         return checkHP().currentHP < 1
     }
-
     fun damageHP(damageValue: Int){
         pokemonCurrentHP -= damageValue
     }

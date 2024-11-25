@@ -1,9 +1,21 @@
-import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.io.read
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import java.util.*
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
+    var masterPokemonList: List<List<PokemonClass>> = listOf(listOf(PokemonClass("MissingNo.","Bird",0)))
+    try{
+        masterPokemonList = PokemonDataGenerator().generatePokemonFromCSV()
+    }
+    catch(e:Exception){
+        println("ERROR: Failed to load CSV data")
+    }
+    finally{
+        println("Starting game...")
+    }
     val endGame = false
     var trainerData = TrainerList<TrainerClass>()
     var currentTrainer = TrainerClass("DEFAULT")
@@ -47,8 +59,27 @@ fun main() {
                 multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false))
             }
             5 -> {
-                PokemonDataGenerator().generateCSVTest()
+                PokemonDataGenerator().generatePokemonFromCSV()
                 }
+            6->{
+                println("Appraise from master List")
+                var trainer = TrainerClass("TEST", false)
+                trainer.currentPokemon.addToParty(masterPokemonList[0][0])
+                trainer.currentPokemon.addToParty(masterPokemonList[0][40])
+                trainer.appraisePokemon(0)
+                trainer.appraisePokemon(1)
+
+            }
+            7 -> {
+                println("Test Case")
+                var trainer = TrainerClass("TEST", false)
+                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,false)
+                var x = 0
+                while (x < trainer.currentPokemon.size()){
+                    trainer.appraisePokemon(x)
+                    x++
+                }
+            }
             }
         }
     }
@@ -90,6 +121,7 @@ fun quickBattle(trainer: TrainerClass){
 }
 fun stressTest(turnCounts:Int){
     battleSpeed = 0
+    val startMillis = System.currentTimeMillis()
     println("+-------------+")
     println("+---STRESS TEST---+")
     println("+-------------+")
@@ -138,6 +170,7 @@ fun stressTest(turnCounts:Int){
         totalRandTurnCount.add(battleStats.totalTurns)
         count++
     }
+    val endMillis = System.currentTimeMillis()
     println("+----+")
     println("Battle Stats (Fixed):")
     println("Player 1 Wins: $winStat1")
@@ -156,6 +189,8 @@ fun stressTest(turnCounts:Int){
     println("Average Turn Count: ${totalRandTurnCount.average()}")
     println("Min Turn Count: ${totalRandTurnCount.min()}")
     println("Max Turn Count: ${totalRandTurnCount.max()}")
+    println("+----+")
+    println("Execution Time: ${endMillis-startMillis}")
     battleSpeed = 1000
 }
 
