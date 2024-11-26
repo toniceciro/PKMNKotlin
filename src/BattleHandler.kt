@@ -1,16 +1,16 @@
 var battleSpeed: Long = 250
-
+var showMessage: Boolean = true
 class BattleHandler {
 
     fun battleMain(player:TrainerClass, player2:TrainerClass):battleData{
         val isBattleFinished = false
         var turnCount = 0
-        println("+--------------------+")
+        if(showMessage)if(showMessage)println("+--------------------+")
         Thread.sleep(battleSpeed)
-        println("+---BATTLE START---+")
-        println("${player.trainerName} vs. ${player2.trainerName}")
+        if(showMessage)println("+---BATTLE START---+")
+        if(showMessage)println("${player.trainerName} vs. ${player2.trainerName}")
         Thread.sleep(battleSpeed)
-        println("+--------------------+")
+        if(showMessage)println("+--------------------+")
         Thread.sleep(battleSpeed)
         //Randomize who gets to send out pokemon first
         val initialPlayerPokemonIndex: Int?
@@ -99,25 +99,25 @@ class BattleHandler {
                         }
                     }
                 }
-                println("+---Turn ${turnCount}---+")
+                if(showMessage)println("+---Turn ${turnCount}---+")
                 mainFightHandler(player,player2,playerChoice,opponentChoice)
                 Thread.sleep(battleSpeed)
                 turnCount++
             }
         }
-        println("+-----------------------+")
+        if(showMessage)println("+-----------------------+")
         when{
-            playerChoice.isTrainerDefeated -> println("${player2.trainerName} won the match!")
-            opponentChoice.isTrainerDefeated -> println("${player.trainerName} won the match!")
+            playerChoice.isTrainerDefeated -> if(showMessage)println("${player2.trainerName} won the match!")
+            opponentChoice.isTrainerDefeated -> if(showMessage)println("${player.trainerName} won the match!")
         }
-        println("+-----------------------+")
+        if(showMessage)println("+-----------------------+")
         Thread.sleep(battleSpeed)
         return battleData(!playerChoice.isTrainerDefeated,!opponentChoice.isTrainerDefeated,turnCount)
     }
     //Main battle functions
     private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:playerChoiceData, opponentChoice: playerChoiceData):playerChoiceData{
         if(sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkIfFainted()){
-            println("${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} fainted!")
+            if(showMessage)println("${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} fainted!")
             sourceTrainer.currentPokemon.removePokemon(playerChoice.currentPokemonIndex)
             if(!sourceTrainer.currentPokemon.isEmpty()){
                 if (playerChoice.isAI == true) {
@@ -130,8 +130,8 @@ class BattleHandler {
                 }
             }
             else{
-                println("${sourceTrainer.trainerName} has no more usable Pokemon")
-                println("${sourceTrainer.trainerName} whited out!")
+                if(showMessage)println("${sourceTrainer.trainerName} has no more usable Pokemon")
+                if(showMessage)println("${sourceTrainer.trainerName} whited out!")
                 playerChoice.isTrainerDefeated = true
                 return playerChoice
             }
@@ -180,34 +180,34 @@ class BattleHandler {
     }
     private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: playerChoiceData){
         sourceChoice.chosenMove?.removePP()
-        println("${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!")
+        if(showMessage)println("${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!")
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
-            println("Critical hit!")
+            if(showMessage)println("Critical hit!")
             Thread.sleep(battleSpeed)
         }
         when{
             battleResult.effectiveVal > 1.0F && battleResult.damageAmount > 0 -> {
-                println("It's super effective!")
+                if(showMessage)println("It's super effective!")
                 Thread.sleep(battleSpeed)
             }
             battleResult.effectiveVal < 1.0F && battleResult.damageAmount > 0 -> {
-                println("It's not very effective...")
+                if(showMessage)println("It's not very effective...")
                 Thread.sleep(battleSpeed)
             }
         }
         when (battleResult.damageAmount <= 0){
             false -> {
-                println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.getName()}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
+                if(showMessage)println("Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.getName()}! (${targetPokemon.pokemonCurrentHP.toInt()} -> ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}})")
                 Thread.sleep(battleSpeed)
             }
             (battleResult.isNotAffected) -> {
-                println("It doesn't affect ${targetPokemon.getName()}...")
+                if(showMessage)println("It doesn't affect ${targetPokemon.getName()}...")
                 Thread.sleep(battleSpeed)
             }
             else -> {
-                println("${sourcePokemon.getName()}'s attack missed!")
+                if(showMessage)println("${sourcePokemon.getName()}'s attack missed!")
                 Thread.sleep(battleSpeed)
             }
         }
@@ -218,7 +218,7 @@ class BattleHandler {
         if(playerChoice.switchToIndex != null){
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
-            println("${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!")
+            if(showMessage)println("${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!")
             Thread.sleep(battleSpeed)
             return playerChoice
         }
@@ -241,12 +241,12 @@ class BattleHandler {
         var currentChoice = playerChoice
         currentChoice.chosenMove = null; currentChoice.switchToIndex = null
         while(  (currentChoice.chosenMove == null && currentChoice.switchToIndex == null)  ){
-            println("+--------------------+")
-            println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
-            println("${trainerData.trainerName}, what will you do?")
-            println("+-----------------+")
-            println("|0 - FIGHT | 1 - Pokemon |")
-            println("+-----------------+")
+            if(showMessage)println("+--------------------+")
+            if(showMessage)println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}): ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP}")
+            if(showMessage)println("${trainerData.trainerName}, what will you do?")
+            if(showMessage)println("+-----------------+")
+            if(showMessage)println("|0 - FIGHT | 1 - Pokemon |")
+            if(showMessage)println("+-----------------+")
             print("CHOICE: ")
             try{
                 choiceIndex = readln().toInt()
@@ -263,14 +263,14 @@ class BattleHandler {
         return currentChoice
     }
     private fun fightSelector(trainerData: TrainerClass, pokemonIndex: Int): PokemonMoveset?{
-        println("+--------------------+")
-        println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
-        println("+-----------------+")
+        if(showMessage)println("+--------------------+")
+        if(showMessage)println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
+        if(showMessage)println("+-----------------+")
         val moveList = trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList
-        println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} |")
-        println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} |")
-        println("+-----------------+")
-        println("4 - BACK")
+        if(showMessage)println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} |")
+        if(showMessage)println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} |")
+        if(showMessage)println("+-----------------+")
+        if(showMessage)println("4 - BACK")
         print("CHOICE: ")
         var fightChoice = 0
         var isMenu = true
@@ -280,7 +280,7 @@ class BattleHandler {
                 if(!(0..4).contains(fightChoice)){isMenu = true; print("CHOICE:")}
                 else{isMenu = false}
             }catch(e: Exception){
-                println("Try again")
+                if(showMessage)println("Try again")
                 print("CHOICE:")
                 continue
             }
@@ -343,11 +343,11 @@ class BattleHandler {
         var switchChoice = 0
         var isMenu = true
         while(isMenu){
-            println("+--------------------+")
-            println("${trainerData.trainerName}, select a pokemon to switch to: ")
-            println("+-----------------+")
+            if(showMessage)println("+--------------------+")
+            if(showMessage)println("${trainerData.trainerName}, select a pokemon to switch to: ")
+            if(showMessage)println("+-----------------+")
             trainerData.listPokemon()
-            if(!forcedFlag){println("6 - BACK")}
+            if(!forcedFlag){if(showMessage)println("6 - BACK")}
             print("CHOICE:")
             try{
                 switchChoice = readln().toInt()
@@ -355,7 +355,7 @@ class BattleHandler {
                 if((0..5).contains(switchChoice)){return switchChoice}
                 else{isMenu = true}
             }catch(e: Exception){
-                println("Try again")
+                if(showMessage)println("Try again")
                 print("CHOICE:")
                 continue
             }

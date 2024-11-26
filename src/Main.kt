@@ -103,6 +103,25 @@ fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
     println("+---MULTIPLAYER BATTLE END---+")
     return
 }
+fun inferenceOak(trainer1:TrainerClass,trainer2:TrainerClass){
+    //Prof. Oak inference
+    val infTrainer1 = trainer1
+    val infTrainer2 = trainer2
+    infTrainer1.setAIFlag(true)
+    infTrainer2.setAIFlag(true)
+    val orgBattleSpeed = battleSpeed
+    val orgShowMessage = showMessage
+    battleSpeed = 0
+    showMessage = false
+    val infBattleStats = BattleHandler().battleMain(infTrainer1,infTrainer2)
+    battleSpeed = orgBattleSpeed
+    showMessage = orgShowMessage
+    when{
+        infBattleStats.playerWin -> println("PROF OAK: ${infTrainer1.trainerName} is likely to win...")
+        infBattleStats.opponentWin -> println("PROF OAK: ${infTrainer2.trainerName} is likely to win...")
+    }
+    println("Trainer 1 has ${trainer1.currentPokemon.size()}, ${infTrainer1.currentPokemon.size()}")
+}
 fun quickBattle(trainer: TrainerClass){
     println("+---QUICK BATTLE---+")
     println("${trainer.trainerName} vs. Rival")

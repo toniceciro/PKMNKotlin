@@ -1,14 +1,16 @@
 class TrainerClass(name:String, aIFlag:Boolean = false) {
 
     val trainerName = name
-    val isAI = aIFlag
+    var isAI = aIFlag
     var currentPokemon = PokemonList<PokemonClass>()
 
     fun appraisePokemon(pokemonIndex: Int){
         val selectedPokemon = currentPokemon.getPokemon(pokemonIndex)
         selectedPokemon.appraisePokemon()
     }
-
+    fun setAIFlag(bool:Boolean){
+        isAI = bool
+    }
     fun listPokemon(){
         var x = 0
         var pokemonLoop: PokemonClass
