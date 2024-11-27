@@ -499,7 +499,7 @@ class PokemonDataGenerator() {
     return targetTrainer
     }
 
-     fun generatePokemonFromCSV():List<List<PokemonClass>>{
+     fun generatePokemonFromCSV(): Map<String,List<PokemonClass>>{
          var x = 0
          val masterTypeList = listOf(
              pokemonFireCSV,
@@ -521,9 +521,12 @@ class PokemonDataGenerator() {
              pokemonSteelCSV,
              pokemonNormalCSV
          )
-         val masterPokemonList = mutableListOf<List<PokemonClass>>()
+         val typeIndex = listOf(
+             "Fire", "Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy","Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Normal"
+         )
+         val masterPokemonList = mutableMapOf<String,List<PokemonClass>>()
          while (x < masterTypeList.size){
-             masterPokemonList.add(parsePokemonData(parsePokemonCSVtoList(masterTypeList[x])[0],parsePokemonCSVtoList(masterTypeList[x])[1],parsePokemonStatsCSVtoList(masterTypeList[x]),100))
+             masterPokemonList.put(typeIndex[x],parsePokemonData(parsePokemonCSVtoList(masterTypeList[x])[0],parsePokemonCSVtoList(masterTypeList[x])[1],parsePokemonStatsCSVtoList(masterTypeList[x]),100))
              x++
          }
          println("Loaded ${masterPokemonList.size} Pokemon Types from CSV")

@@ -444,7 +444,7 @@ class BattleHandler {
                 type1 == "Normal" && type2 == "Rock" -> 0.5F
                 type1 == "Normal" && type2 == "Ghost" -> 0F
                 type1 == "Normal" && type2 == "Steel" -> 0.5F
-                type1 == "Normal" || type2 == "Normal" -> 1F
+                type1 == "Normal" && type2 == "Normal" -> 1F
 
                 // Bug
                 type1 == "Bug" && type2 == "Fire" -> 0.5F
@@ -539,6 +539,53 @@ class BattleHandler {
                 type1 == "Dragon" && type2 == "Fire" -> 0.5F
                 type1 == "Dragon" && type2 == "Water" -> 0.5F
                 type1 == "Dragon" && type2 == "Electric" -> 0.5F
+
+                // Ice
+                type1 == "Ice" && type2 == "Water" -> 0.5F
+                type1 == "Ice" && type2 == "Grass" -> 2F
+                type1 == "Ice" && type2 == "Ground" -> 2F
+                type1 == "Ice" && type2 == "Flying" -> 2F
+                type1 == "Ice" && type2 == "Dragon" -> 2F
+                type1 == "Ice" && type2 == "Steel" -> 0.5F
+                type1 == "Ice" && type2 == "Fire" -> 0.5F
+                type1 == "Ice" && type2 == "Water" -> 0.5F
+                type1 == "Ice" && type2 == "Ice" -> 0.5F
+                type1 == "Ice" && type2 == "Rock" -> 0.5F
+
+                // Poison
+                type1 == "Poison" && type2 == "Grass" -> 2F
+                type1 == "Poison" && type2 == "Fairy" -> 2F
+                type1 == "Poison" && type2 == "Poison" -> 0.5F
+                type1 == "Poison" && type2 == "Ground" -> 0.5F
+                type1 == "Poison" && type2 == "Rock" -> 0.5F
+                type1 == "Poison" && type2 == "Ghost" -> 0.5F
+                type1 == "Poison" && type2 == "Steel" -> 0F
+                type1 == "Poison" && type2 == "Poison" -> 0.5F
+                type1 == "Poison" && type2 == "Bug" -> 1F
+                type1 == "Poison" && type2 == "Flying" -> 1F
+                type1 == "Poison" && type2 == "Dragon" -> 1F
+                type1 == "Poison" && type2 == "Fire" -> 1F
+                type1 == "Poison" && type2 == "Water" -> 1F
+                type1 == "Poison" && type2 == "Ice" -> 1F
+                type1 == "Poison" && type2 == "Psychic" -> 1F
+
+                // Fighting
+                type1 == "Fighting" && type2 == "Normal" -> 2F
+                type1 == "Fighting" && type2 == "Rock" -> 2F
+                type1 == "Fighting" && type2 == "Steel" -> 2F
+                type1 == "Fighting" && type2 == "Ice" -> 2F
+                type1 == "Fighting" && type2 == "Dark" -> 2F
+                type1 == "Fighting" && type2 == "Poison" -> 0.5F
+                type1 == "Fighting" && type2 == "Flying" -> 0.5F
+                type1 == "Fighting" && type2 == "Psychic" -> 0.5F
+                type1 == "Fighting" && type2 == "Bug" -> 0.5F
+                type1 == "Fighting" && type2 == "Fairy" -> 0.5F
+                type1 == "Fighting" && type2 == "Ghost" -> 0F
+                type1 == "Fighting" && type2 == "Water" -> 1F
+                type1 == "Fighting" && type2 == "Grass" -> 1F
+                type1 == "Fighting" && type2 == "Electric" -> 1F
+                type1 == "Fighting" && type2 == "Dragon" -> 1F
+
 
 
 

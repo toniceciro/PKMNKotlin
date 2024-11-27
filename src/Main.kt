@@ -4,9 +4,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalEncodingApi::class)
 fun main() {
-    var masterPokemonList: List<List<PokemonClass>> = listOf(listOf(PokemonClass("MissingNo.","Bird",0)))
+//    var masterPokemonList: Map<String,List<PokemonClass>>
     try{
-        masterPokemonList = PokemonDataGenerator().generatePokemonFromCSV()
+//        masterPokemonList = PokemonDataGenerator().generatePokemonFromCSV()
     }
     catch(e:Exception){
         println("ERROR: Failed to load CSV data")
@@ -79,12 +79,13 @@ fun main() {
                 deserTrainer.listPokemon()
                 }
             6->{
-                println("Appraise from master List")
-                var trainer = TrainerClass("TEST", false)
-                trainer.currentPokemon.addToParty(masterPokemonList[0][0])
-                trainer.currentPokemon.addToParty(masterPokemonList[0][40])
-                trainer.appraisePokemon(0)
-                trainer.appraisePokemon(1)
+//                println("Appraise from master List")
+//                var trainer = TrainerClass("TEST", false)
+//                masterPokemonList.get("Fire"!!)
+//                trainer.currentPokemon.addToParty(masterPokemonList[0][0])
+//                trainer.currentPokemon.addToParty(masterPokemonList[0][40])
+//                trainer.appraisePokemon(0)
+//                trainer.appraisePokemon(1)
 
             }
             7 -> {
