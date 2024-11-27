@@ -586,9 +586,6 @@ class BattleHandler {
                 type1 == "Fighting" && type2 == "Electric" -> 1F
                 type1 == "Fighting" && type2 == "Dragon" -> 1F
 
-
-
-
                 else -> 1F
             }
         } //List of values for effectivity
