@@ -1,3 +1,4 @@
+import com.google.gson.*
 class TrainerClass(name:String, aIFlag:Boolean = false) {
 
     val trainerName = name
@@ -19,6 +20,14 @@ class TrainerClass(name:String, aIFlag:Boolean = false) {
             println("$x - ${pokemonLoop.getName()} (LV ${pokemonLoop.getLevel()}) (${pokemonLoop.pokemonType})")
             x++
         }
+    }
+    fun deepCopy():TrainerClass {
+        val JSON = Gson().toJson(this)
+        return Gson().fromJson(JSON, TrainerClass::class.java)
+    }
+    fun serializeToJSON():String {
+        val JSON = Gson().toJson(this)
+        return JSON
     }
 }
 

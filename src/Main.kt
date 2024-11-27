@@ -1,10 +1,8 @@
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import java.util.*
+import com.google.gson.Gson
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+@OptIn(ExperimentalEncodingApi::class)
 fun main() {
     var masterPokemonList: List<List<PokemonClass>> = listOf(listOf(PokemonClass("MissingNo.","Bird",0)))
     try{
@@ -59,7 +57,26 @@ fun main() {
                 multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false))
             }
             5 -> {
-                PokemonDataGenerator().generatePokemonFromCSV()
+                println("Serialization Test")
+                var trainer = TrainerClass("CompressMe", false)
+                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,true)
+                trainer.listPokemon()
+                val base64 = Base64.encode(trainer.serializeToJSON().toByteArray())
+                println("${base64}")
+                println("base64 charset has ${base64.length} characters")
+                println("Compression Test")
+                val gzipped = gzip(base64)
+                println(gzipped.toString())
+                println("Commpressed version has ${gzipped.size}")
+                println("Verify unzipped is equal to original")
+                val ungzipped = ungzip(gzipped)
+                if(ungzipped.toString() == base64){println("It's the same!")}
+                println("deseralize back to TrainerClass")
+                val decoded = String(Base64.decode(ungzipped))
+                println("BASE64 DECODE OK")
+                val deserTrainer = Gson().fromJson(decoded, TrainerClass::class.java)
+                println("${deserTrainer.trainerName} has been decoded!")
+                deserTrainer.listPokemon()
                 }
             6->{
                 println("Appraise from master List")
@@ -97,6 +114,7 @@ fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
     Thread.sleep(5000)
     println("${trainer2.trainerName} has: ")
     trainer2.listPokemon()
+    inferenceOak(trainer1,trainer2)
     Thread.sleep(5000)
     val battleHandler = BattleHandler()
     battleHandler.battleMain(trainer1,trainer2)
@@ -105,8 +123,8 @@ fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
 }
 fun inferenceOak(trainer1:TrainerClass,trainer2:TrainerClass){
     //Prof. Oak inference
-    val infTrainer1 = trainer1
-    val infTrainer2 = trainer2
+    val infTrainer1 = trainer1.deepCopy()
+    val infTrainer2 = trainer2.deepCopy()
     infTrainer1.setAIFlag(true)
     infTrainer2.setAIFlag(true)
     val orgBattleSpeed = battleSpeed
@@ -117,10 +135,9 @@ fun inferenceOak(trainer1:TrainerClass,trainer2:TrainerClass){
     battleSpeed = orgBattleSpeed
     showMessage = orgShowMessage
     when{
-        infBattleStats.playerWin -> println("PROF OAK: ${infTrainer1.trainerName} is likely to win...")
-        infBattleStats.opponentWin -> println("PROF OAK: ${infTrainer2.trainerName} is likely to win...")
+        infBattleStats.playerWin -> println("PROF OAK: You're foe's weak! Get'm ${infTrainer2.trainerName}!")
+        infBattleStats.opponentWin -> println("PROF OAK: PROF OAK: You're foe's weak! Get'm ${infTrainer1.trainerName}!")
     }
-    println("Trainer 1 has ${trainer1.currentPokemon.size()}, ${infTrainer1.currentPokemon.size()}")
 }
 fun quickBattle(trainer: TrainerClass){
     println("+---QUICK BATTLE---+")
@@ -160,6 +177,7 @@ fun stressTest(turnCounts:Int){
         PokemonDataGenerator().generatePokemon(trainer2,6,4,false)
         trainer1.listPokemon()
         trainer2.listPokemon()
+        inferenceOak(trainer1,trainer2)
         val battleHandler = BattleHandler()
         val battleStats = battleHandler.battleMain(trainer1,trainer2)
         when(battleStats.playerWin){

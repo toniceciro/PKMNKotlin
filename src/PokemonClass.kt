@@ -10,7 +10,7 @@ class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: I
     private var baseSPA: Int = baseInitSPA?:(69..83).random()
     private var baseSPD: Int = baseInitSPD?:(69..83).random()
     private var baseSPE: Int = baseInitSPE?:(66..78).random()
-    private val shinyValue = (0..8191).random()
+    private val shinyValue = 4095
     private val shinyIndicator = (0..8191).random()
 
 
