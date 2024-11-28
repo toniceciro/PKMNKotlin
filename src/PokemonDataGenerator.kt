@@ -1,8 +1,14 @@
 import org.jetbrains.kotlinx.dataframe.*
 import org.jetbrains.kotlinx.dataframe.io.*
 import java.io.File
+
+
 class PokemonDataGenerator() {
-    //Pokemon Type
+    //Type constants
+    final val TYPE_INDEX = listOf(
+        "Fire", "Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy","Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Normal"
+    )
+    //Pokemon Type Data CSV
     private val pokemonFireCSV = DataFrame.read("PKData/PokemonFireList.csv")
     private val pokemonWaterCSV = DataFrame.read("PKData/PokemonWaterList.csv")
     private val pokemonGrassCSV = DataFrame.read("PKData/PokemonGrassList.csv")
@@ -21,8 +27,8 @@ class PokemonDataGenerator() {
     private val pokemonGhostCSV = DataFrame.read("PKData/PokemonGhostList.csv")
     private val pokemonSteelCSV = DataFrame.read("PKData/PokemonSteelList.csv")
     private val pokemonNormalCSV = DataFrame.read("PKData/PokemonNormalList.csv")
-
-
+    //Pokemon Move CSV
+    private val pokemonMovesCSV = DataFrame.read("PKData/All_Moves.csv")
 
     private val pokemonNameFireList = listOf(
         "Litten", "Torracat", "Incineroar", "Salandit", "Salazzle", "Oricorio (Baile Style)", "Turtonator",
@@ -42,7 +48,7 @@ class PokemonDataGenerator() {
     private val pokemonPowerFireList = listOf(40, 70, 90, 110, 120, 95, 100, 85, 130, 150)
     private val pokemonMoveFirePPList = listOf(25, 15, 15, 5, 15, 10, 5, 10, 5, 5)
     private val pokemonMoveFireAccuracyList = listOf(100, 100, 100, 85, 100, 90, 50, 90, 85, 100)
-    private val pokemonMoveFireAtkAttributeList = listOf(1,1,1,1,1,1,1,0,1,1)
+    private val pokemonMoveFireAtkAttributeList = listOf("Special","Special","Special","Special","Special","Special","Special","Physical","Special","Special")
     private val pokemonFireMoveList = parseMoveData(pokemonMoveFireList,"Fire",pokemonPowerFireList,pokemonMoveFirePPList,pokemonMoveFireAccuracyList,pokemonMoveFireAtkAttributeList)
 
     private val FirePokemonList = listOf(pokemonNameFireList,pokemonMoveFireList,pokemonPowerFireList,pokemonMoveFirePPList,pokemonMoveFireAccuracyList,pokemonMoveTypeFireList)
@@ -521,9 +527,7 @@ class PokemonDataGenerator() {
              pokemonSteelCSV,
              pokemonNormalCSV
          )
-         val typeIndex = listOf(
-             "Fire", "Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy","Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Normal"
-         )
+         val typeIndex = TYPE_INDEX
          val masterPokemonList = mutableMapOf<String,List<PokemonClass>>()
          while (x < masterTypeList.size){
              masterPokemonList.put(typeIndex[x],parsePokemonData(parsePokemonCSVtoList(masterTypeList[x])[0],parsePokemonCSVtoList(masterTypeList[x])[1],parsePokemonStatsCSVtoList(masterTypeList[x]),100))
@@ -542,8 +546,8 @@ class PokemonDataGenerator() {
         }
         return pokemonList
     }
-    private fun parseMoveData(moveNameList: List<String>, moveType:String, movePowerList: List<Int>, movePPList: List<Int>, moveAccuracyList: List<Int>, moveAttributeAtkTypeList: List<Int>,): List<PokemonMoveset>{
-        val pokemonMoveList = mutableListOf<PokemonMoveset>()
+    private fun parseMoveData(moveNameList: List<String>, moveType:String, movePowerList: List<Int>, movePPList: List<Int>, moveAccuracyList: List<Int>, moveAttributeAtkTypeList: List<String>): Map<String,List<PokemonMoveset>>{
+        val pokemonMoveList = mutableMapOf<String,List<PokemonMoveset>>()
         var x = 0
         while (x < moveNameList.size){
             pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType,movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttributeAtkTypeList[x]))
