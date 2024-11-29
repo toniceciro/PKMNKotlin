@@ -7,6 +7,7 @@ class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPo
     private var maxPP = powerPoints
     private var accuracy = accuracyLevel
     private var currentPP = maxPP
+    private var attackAtr = attackType
 
     fun addPP(){
         currentPP++
@@ -32,10 +33,13 @@ class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPo
     fun getAccuracy():Int{
         return accuracy
     }
+    fun getAttackType():String{
+        return attackAtr
+    }
     fun checkIfEmpty():Boolean{
         if(currentPP <= 0){
             name = "Struggle"
-            type = "Normal"
+            type = "--"
             power = 10
             accuracy = 100
             return true

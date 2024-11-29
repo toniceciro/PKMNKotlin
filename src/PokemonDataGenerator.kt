@@ -1,3 +1,4 @@
+import com.google.gson.Gson
 import org.jetbrains.kotlinx.dataframe.*
 import org.jetbrains.kotlinx.dataframe.io.*
 import java.io.File
@@ -6,29 +7,11 @@ import java.io.File
 class PokemonDataGenerator() {
     //Type constants
     final val TYPE_INDEX = listOf(
-        "Fire", "Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy","Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Normal"
-    )
-    //Pokemon Type Data CSV
-    private val pokemonFireCSV = DataFrame.read("PKData/PokemonFireList.csv")
-    private val pokemonWaterCSV = DataFrame.read("PKData/PokemonWaterList.csv")
-    private val pokemonGrassCSV = DataFrame.read("PKData/PokemonGrassList.csv")
-    private val pokemonElectricCSV = DataFrame.read("PKData/PokemonElectricList.csv")
-    private val pokemonPsychicCSV = DataFrame.read("PKData/PokemonPsychicList.csv")
-    private val pokemonIceCSV = DataFrame.read("PKData/PokemonIceList.csv")
-    private val pokemonDragonCSV = DataFrame.read("PKData/PokemonDragonList.csv")
-    private val pokemonDarkCSV = DataFrame.read("PKData/PokemonDarkList.csv")
-    private val pokemonFairyCSV = DataFrame.read("PKData/PokemonFairyList.csv")
-    private val pokemonFightingCSV = DataFrame.read("PKData/PokemonFightingList.csv")
-    private val pokemonFlyingCSV = DataFrame.read("PKData/PokemonFlyingList.csv")
-    private val pokemonPoisonCSV = DataFrame.read("PKData/PokemonPoisonList.csv")
-    private val pokemonGroundCSV = DataFrame.read("PKData/PokemonGroundList.csv")
-    private val pokemonRockCSV = DataFrame.read("PKData/PokemonRockList.csv")
-    private val pokemonBugCSV = DataFrame.read("PKData/PokemonBugList.csv")
-    private val pokemonGhostCSV = DataFrame.read("PKData/PokemonGhostList.csv")
-    private val pokemonSteelCSV = DataFrame.read("PKData/PokemonSteelList.csv")
-    private val pokemonNormalCSV = DataFrame.read("PKData/PokemonNormalList.csv")
+        "Fire", "Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy","Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Normal")
     //Pokemon Move CSV
     private val pokemonMovesCSV = DataFrame.read("PKData/All_Moves.csv")
+    //Pokemon All CSV
+    private val pokemonCSV = DataFrame.read("PKDATA/Pokemon.csv")
 
     private val pokemonNameFireList = listOf(
         "Litten", "Torracat", "Incineroar", "Salandit", "Salazzle", "Oricorio (Baile Style)", "Turtonator",
@@ -49,7 +32,6 @@ class PokemonDataGenerator() {
     private val pokemonMoveFirePPList = listOf(25, 15, 15, 5, 15, 10, 5, 10, 5, 5)
     private val pokemonMoveFireAccuracyList = listOf(100, 100, 100, 85, 100, 90, 50, 90, 85, 100)
     private val pokemonMoveFireAtkAttributeList = listOf("Special","Special","Special","Special","Special","Special","Special","Physical","Special","Special")
-    private val pokemonFireMoveList = parseMoveData(pokemonMoveFireList,"Fire",pokemonPowerFireList,pokemonMoveFirePPList,pokemonMoveFireAccuracyList,pokemonMoveFireAtkAttributeList)
 
     private val FirePokemonList = listOf(pokemonNameFireList,pokemonMoveFireList,pokemonPowerFireList,pokemonMoveFirePPList,pokemonMoveFireAccuracyList,pokemonMoveTypeFireList)
 
@@ -421,38 +403,7 @@ class PokemonDataGenerator() {
     private val MainPokemonList = listOf(FirePokemonList, WaterPokemonList, GrassPokemonList, NormalPokemonList, BugPokemonList, RockPokemonList, FlyingPokemonList, SteelPokemonList, ElectricPokemonList, PsychicPokemonList, DarkPokemonList, GhostPokemonList, FairyPokemonList, GroundPokemonList, DragonPokemonList,PoisonPokemonList,IcePokemonList,FightingPokemonList)
     private val PokemonTypeList = listOf("Fire","Water","Grass","Normal","Bug","Rock","Flying","Steel","Electric","Psychic","Dark","Ghost","Fairy","Ground", "Dragon","Poison","Ice","Fighting")
 
-    fun generatePokemon(targetTrainer:TrainerClass,pokemonAmount:Int, movesAmount:Int, isSilent: Boolean):TrainerClass{
-        var i = 0
-        while (i < pokemonAmount){
-            val typeRand = MainPokemonList.indices.random()
-            val nameRand = MainPokemonList[typeRand].indices.random()
-            val pokemonName = MainPokemonList[typeRand][0][nameRand].toString()
-            val createdPokemon = PokemonClass(pokemonName, MainPokemonList[typeRand][5][nameRand].toString(), 100)
-            if (!isSilent) println("${createdPokemon.getName()} at Level ${createdPokemon.getLevel()} is created!")
-            while(createdPokemon.pokemonMoveList.size() < movesAmount){
-                var matchFound = false
-                val rand = MainPokemonList[typeRand][1].indices.random()
-                val createdMove = PokemonMoveset(MainPokemonList[typeRand][1][rand].toString(),PokemonTypeList.get(typeRand),MainPokemonList[typeRand][2][rand].toString().toInt(),MainPokemonList[typeRand][3][rand].toString().toInt(),MainPokemonList[typeRand][4][rand].toString().toInt())
-                var k = 0
-                while (k < createdPokemon.pokemonMoveList.size()){
-                    if (createdPokemon.pokemonMoveList.getMove(k).getName() != createdMove.getName()){
-                        k++
-                    }
-                    else{
-                        matchFound = true
-                        k++
-                    }
-                }
-                if (matchFound){continue}
-                createdPokemon.pokemonMoveList.push(createdMove)
-                if (!isSilent) println("${createdPokemon.getName()} learned ${createdPokemon.pokemonMoveList.getMove(createdPokemon.pokemonMoveList.size() - 1).getName()}!")
-            }
-            if (!isSilent) println("${createdPokemon.getName()}  is added to the party.")
-            targetTrainer.currentPokemon.addToParty(createdPokemon)
-            i++
-        }
-        return targetTrainer
-    }
+
     fun createPokemon(targetTrainer: TrainerClass):TrainerClass{
         var isFinished = false
         println("+-----------------+")
@@ -504,108 +455,94 @@ class PokemonDataGenerator() {
         }
     return targetTrainer
     }
-
-     fun generatePokemonFromCSV(): Map<String,List<PokemonClass>>{
-         var x = 0
-         val masterTypeList = listOf(
-             pokemonFireCSV,
-             pokemonWaterCSV,
-             pokemonGrassCSV,
-             pokemonElectricCSV,
-             pokemonPsychicCSV,
-             pokemonIceCSV,
-             pokemonDragonCSV,
-             pokemonDarkCSV,
-             pokemonFairyCSV,
-             pokemonFightingCSV,
-             pokemonFlyingCSV,
-             pokemonPoisonCSV,
-             pokemonGroundCSV,
-             pokemonRockCSV,
-             pokemonBugCSV,
-             pokemonGhostCSV,
-             pokemonSteelCSV,
-             pokemonNormalCSV
-         )
-         val typeIndex = TYPE_INDEX
-         val masterPokemonList = mutableMapOf<String,List<PokemonClass>>()
-         while (x < masterTypeList.size){
-             masterPokemonList.put(typeIndex[x],parsePokemonData(parsePokemonCSVtoList(masterTypeList[x])[0],parsePokemonCSVtoList(masterTypeList[x])[1],parsePokemonStatsCSVtoList(masterTypeList[x]),100))
-             x++
-         }
-         println("Loaded ${masterPokemonList.size} Pokemon Types from CSV")
-         return masterPokemonList
-    }
-    private fun parsePokemonData(nameList: List<String>, typeList:List<String>,statList:List<List<Int>>, level: Int = 100):List<PokemonClass>{
-        val pokemonList = mutableListOf<PokemonClass>()
-        if(nameList.size != typeList.size || nameList.size != statList[0].size){throw IndexOutOfBoundsException("Name List and Type List do not have the same number of items, ${nameList.size}, ${typeList.size}, ${statList.size}")}
+    fun generatePokemonFromCSVV2(): Map<String,List<PokemonClass>>{
         var x = 0
-        while(x < nameList.size){
-            pokemonList.add(PokemonClass(nameList[x],typeList[x], level,statList[0][x],statList[1][x],statList[2][x],statList[3][x],statList[4][x],statList[5][x]))
+        val CSV = pokemonCSV
+        val pokemonListAll = parsePokemonCSVtoPokemon(CSV)
+        val typeIndex = TYPE_INDEX
+        val masterPokemonList = mutableMapOf<String,List<PokemonClass>>()
+        while (x < typeIndex.size){
+            var y = 0
+            val pokemonTypeList = mutableListOf<PokemonClass>()
+            while (y < pokemonListAll.size - 1){
+                if (pokemonListAll[y].pokemonType.contains(typeIndex[x])){
+                    pokemonTypeList.add(pokemonListAll[y])
+                    y++
+                }else{
+                    y++
+                }
+            }
+            masterPokemonList.put(typeIndex[x],pokemonTypeList)
             x++
         }
-        return pokemonList
+        println("INFO: Loaded ${masterPokemonList.keys.size} Pokemon Types & ${masterPokemonList.values.size} Pokemon from CSV!")
+        return masterPokemonList
     }
-    private fun parseMoveData(moveNameList: List<String>, moveType:String, movePowerList: List<Int>, movePPList: List<Int>, moveAccuracyList: List<Int>, moveAttributeAtkTypeList: List<String>): Map<String,List<PokemonMoveset>>{
-        val pokemonMoveList = mutableMapOf<String,List<PokemonMoveset>>()
+    fun generateMovesFromCSV():Map<String,List<PokemonMoveset>>{
+        val CSV = pokemonMovesCSV
+        val moveDatalist = parsePokemonMoveCSVToList(CSV)
+        val moveList = parseMoveData(moveDatalist[0] as List<String>,
+            moveDatalist[1] as List<String>, moveDatalist[2] as List<Int>, moveDatalist[3] as List<Int>,moveDatalist[4] as List<Int>,
+            moveDatalist[5] as List<String>
+        )
+        val parsedMap = parseMoveMap(moveList)
+        println("INFO: Loaded ${parsedMap.values.size} Moves in ${parsedMap.keys.size} Move Types!")
+        return parsedMap
+    }
+
+    private fun parseMoveMap(pokemonMoveList:List<PokemonMoveset>):Map<String,List<PokemonMoveset>>{
+        var x = 0
+        val moveTypeMap = mutableMapOf<String,List<PokemonMoveset>>()
+        val typeIndexList = TYPE_INDEX
+        while(x < typeIndexList.size){
+            var y = 0
+            val moveTypeList = mutableListOf<PokemonMoveset>()
+            while(y < pokemonMoveList.size){
+                if(pokemonMoveList[y].getType() == typeIndexList.get(x)){
+                    moveTypeList.add(pokemonMoveList[y])
+                    y++
+                }
+                else{
+                    y++
+                }
+            }
+            moveTypeMap.put(typeIndexList.get(x),moveTypeList)
+            x++
+        }
+        return moveTypeMap
+    }
+    private fun parseMoveData(moveNameList: List<String>, moveType:List<String>, movePowerList: List<Int>, movePPList: List<Int>, moveAccuracyList: List<Int>, moveAttackTypeList: List<String>): List<PokemonMoveset>{
+        val pokemonMoveList = mutableListOf<PokemonMoveset>()
         var x = 0
         while (x < moveNameList.size){
-            pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType,movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttributeAtkTypeList[x]))
+            if(moveType[x] == "Status"){x++;continue}
+            if(movePowerList[x] == 0){x++;continue}
+            pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
             x++
         }
         return pokemonMoveList
     }
-    private fun assignRandomMove(targetPokemon:PokemonClass, masterPokemonMoveList: List<List<PokemonMoveset>>) {
-        //Get & Parse Pokemon's Type
+    private fun assignRandomMoveFromMap(targetPokemon: PokemonClass, movesMap: Map<String,List<PokemonMoveset>>){
         val pokemonType = targetPokemon.pokemonType
         val type1 = pokemonType.substringBefore('|')
         val type2 = pokemonType.substringAfter('|')
-        //Search for movelists where Pokemon has both types
-        var moveTypeIndex1 = 0
-        var moveTypeIndex2: Int? = 0
-        var foundIndex1 = false
-        var foundIndex2 = false
-        while (!foundIndex1){
-            //Traverse list to find type
-            if (type1 == masterPokemonMoveList[moveTypeIndex1][0].getType()){
-                foundIndex1 = true
-            }
-            else{
-                moveTypeIndex1++
-                continue
-            }
-        }
-        while (!foundIndex2 && (type2 != type1)){
-            //Traverse list to find type
-            if (type2 == masterPokemonMoveList[moveTypeIndex1][0].getType()){
-                foundIndex2 = true
-            }
-            else{
-                moveTypeIndex2 = moveTypeIndex2!! + 1
-                continue
-            }
-        }
-        //Randomly assign moves to Pokemon using obtained indices
         while (targetPokemon.pokemonMoveList.size() < 4){
-            val randType = when(moveTypeIndex2){
-                null -> moveTypeIndex1
-                else -> listOf(moveTypeIndex1,moveTypeIndex2).random()
+            when ((0..2).random()){
+                0 -> {
+                    targetPokemon.pokemonMoveList.push(movesMap.getValue(type1)[(0..movesMap.getValue(type1).size - 1).random()])
+                }
+                1 -> {
+                    targetPokemon.pokemonMoveList.push(movesMap.getValue(type2)[(0..movesMap.getValue(type2).size - 1).random()])
+                }
+                2 -> {
+                    targetPokemon.pokemonMoveList.push(movesMap.getValue("Normal")[(0..movesMap.getValue("Normal").size - 1).random()])
+                }
             }
-            targetPokemon.pokemonMoveList.push(masterPokemonMoveList[randType][(0..masterPokemonMoveList[randType].size).random()])
         }
     }
-    private fun parsePokemonCSVtoList(csvFile: AnyFrame):List<List<String>>{
+    private fun parsePokemonCSVtoPokemon(csvFile: AnyFrame):List<PokemonClass>{
         val pokemonNameList = mutableListOf<String>()
         val pokemonTypeList = mutableListOf<String>()
-        var x = 0
-        for(row in csvFile){
-            pokemonNameList.add(row[0].toString())
-            pokemonTypeList.add(row[1].toString())
-            x++
-        }
-        return listOf(pokemonNameList,pokemonTypeList)
-    }
-    private fun parsePokemonStatsCSVtoList(csvFile: AnyFrame):List<List<Int>>{
         val pokemonHPList = mutableListOf<Int>()
         val pokemonATKList = mutableListOf<Int>()
         val pokemonDEFList = mutableListOf<Int>()
@@ -613,13 +550,98 @@ class PokemonDataGenerator() {
         val pokemonSPDList = mutableListOf<Int>()
         val pokemonSPEList = mutableListOf<Int>()
         for(row in csvFile){
-            pokemonHPList.add(row[2].toString().toInt())
-            pokemonATKList.add(row[3].toString().toInt())
-            pokemonDEFList.add(row[4].toString().toInt())
-            pokemonSPAList.add(row[5].toString().toInt())
-            pokemonSPDList.add(row[6].toString().toInt())
-            pokemonSPEList.add(row[7].toString().toInt())
+            if(row[2] != " "){
+                pokemonNameList.add((row[1].toString() + " (" + row[2].toString() + ")"))
+            }else{
+                pokemonNameList.add(row[1].toString())
+            }
+
+            if(row[4] != " "){
+                pokemonTypeList.add((row[3].toString() + "|"+ row[4].toString()))
+            }else{
+                pokemonTypeList.add(row[3].toString())
+            }
+            pokemonHPList.add(row[6].toString().toInt())
+            pokemonATKList.add(row[7].toString().toInt())
+            pokemonDEFList.add(row[8].toString().toInt())
+            pokemonSPAList.add(row[9].toString().toInt())
+            pokemonSPDList.add(row[10].toString().toInt())
+            pokemonSPEList.add(row[11].toString().toInt())
         }
-        return listOf(pokemonHPList,pokemonATKList,pokemonDEFList,pokemonSPAList,pokemonSPDList,pokemonSPEList)
+        var x = 0
+        val pokemonList = mutableListOf<PokemonClass>()
+        while(x < pokemonNameList.size - 1){
+            pokemonList.add(PokemonClass(pokemonNameList[x],pokemonTypeList[x],100,pokemonHPList[x],pokemonATKList[x],pokemonDEFList[x],pokemonSPAList[x],pokemonSPDList[x],pokemonSPEList[x]))
+            x++
+        }
+        return pokemonList
+    }
+
+    private fun parsePokemonMoveCSVToList(csvFile: AnyFrame):List<List<Any>>{
+        val pokemonMoveNameList = mutableListOf<String>()
+        val pokemonMoveTypeList = mutableListOf<String>()
+        val pokemonMoveBasePowerList = mutableListOf<Int>()
+        val pokemonMoveAccuracyList = mutableListOf<Int>()
+        val pokemonMovePPList = mutableListOf<Int>()
+        val pokemonMoveAtkTypeList = mutableListOf<String>()
+        for(row in csvFile){
+            pokemonMoveNameList.add(row[0].toString())
+            pokemonMoveTypeList.add(row[1].toString())
+            pokemonMoveBasePowerList.add(row[4].toString().toIntOrNull()?:0)
+            pokemonMoveAccuracyList.add(row[5].toString().toIntOrNull()?:100)
+            pokemonMovePPList.add(row[6].toString().toIntOrNull()?:10)
+            pokemonMoveAtkTypeList.add(row[2].toString())
+        }
+        return listOf(pokemonMoveNameList,pokemonMoveTypeList,pokemonMoveBasePowerList,pokemonMovePPList,pokemonMoveAccuracyList,pokemonMoveAtkTypeList)
+    }
+    fun generatePokemon(targetTrainer:TrainerClass,pokemonAmount:Int, movesAmount:Int, isSilent: Boolean,
+                        isFromCSV: Boolean = true):TrainerClass{
+
+        if(!isFromCSV){
+            var i = 0
+            while (i < pokemonAmount){
+                val typeRand = MainPokemonList.indices.random()
+                val nameRand = MainPokemonList[typeRand].indices.random()
+                val pokemonName = MainPokemonList[typeRand][0][nameRand].toString()
+                val createdPokemon = PokemonClass(pokemonName, MainPokemonList[typeRand][5][nameRand].toString(), 100)
+                if (!isSilent) println("${createdPokemon.getName()} at Level ${createdPokemon.getLevel()} is created!")
+                while(createdPokemon.pokemonMoveList.size() < movesAmount){
+                    var matchFound = false
+                    val rand = MainPokemonList[typeRand][1].indices.random()
+                    val createdMove = PokemonMoveset(MainPokemonList[typeRand][1][rand].toString(),PokemonTypeList.get(typeRand),MainPokemonList[typeRand][2][rand].toString().toInt(),MainPokemonList[typeRand][3][rand].toString().toInt(),MainPokemonList[typeRand][4][rand].toString().toInt())
+                    var k = 0
+                    while (k < createdPokemon.pokemonMoveList.size()){
+                        if (createdPokemon.pokemonMoveList.getMove(k).getName() != createdMove.getName()){
+                            k++
+                        }
+                        else{
+                            matchFound = true
+                            k++
+                        }
+                    }
+                    if (matchFound){continue}
+                    createdPokemon.pokemonMoveList.push(createdMove)
+                    if (!isSilent) println("${createdPokemon.getName()} learned ${createdPokemon.pokemonMoveList.getMove(createdPokemon.pokemonMoveList.size() - 1).getName()}!")
+                }
+                if (!isSilent) println("${createdPokemon.getName()}  is added to the party.")
+                targetTrainer.currentPokemon.addToParty(createdPokemon)
+                i++
+            }
+        }
+        else{
+            val pokemonDataMap: Map<String,List<PokemonClass>> = PokemonDataGenerator().generatePokemonFromCSVV2()
+            val pokemonMoveData: Map<String,List<PokemonMoveset>> = PokemonDataGenerator().generateMovesFromCSV()
+            var x = 0
+            while (x < pokemonAmount){
+                val randType = TYPE_INDEX.random()
+                val createdPokemon = pokemonDataMap.getValue(randType)[(0..pokemonDataMap.getValue(randType).size - 1).random()]
+                while (createdPokemon.pokemonMoveList.size() < movesAmount){
+                    assignRandomMoveFromMap(createdPokemon,pokemonMoveData)
+                }
+                targetTrainer.currentPokemon.addToParty(createdPokemon)
+                x++
+            }
+        }
+        return targetTrainer
     }
 }

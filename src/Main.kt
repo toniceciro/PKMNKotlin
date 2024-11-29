@@ -1,19 +1,11 @@
 import com.google.gson.Gson
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-
+val masterPokemonList: Map<String,List<PokemonClass>> = PokemonDataGenerator().generatePokemonFromCSVV2()
+val masterMoveList: Map<String,List<PokemonMoveset>> = PokemonDataGenerator().generateMovesFromCSV()
 @OptIn(ExperimentalEncodingApi::class)
 fun main() {
-//    var masterPokemonList: Map<String,List<PokemonClass>>
-    try{
-//        masterPokemonList = PokemonDataGenerator().generatePokemonFromCSV()
-    }
-    catch(e:Exception){
-        println("ERROR: Failed to load CSV data")
-    }
-    finally{
-        println("Starting game...")
-    }
+
     val endGame = false
     var trainerData = TrainerList<TrainerClass>()
     var currentTrainer = TrainerClass("DEFAULT")
@@ -27,14 +19,7 @@ fun main() {
         println("4 - Multiplayer")
         val choice: String = readLine() ?: "0"
         when (choice.toInt()){
-            0 -> quickBattle(TrainerClass("QUICKPLAY",false))
-            1 -> {
-            if (trainerData.isEmpty() || currentTrainer.trainerName == "DEFAULT"){
-                println("You need to make a trainer first...")
-            }else{
-                quickBattle(currentTrainer)
-            }
-        }
+            0 -> quickBattle(TrainerClass("QUICKPLAY",false),true, masterPokemonList,masterMoveList)
             2 -> {
                 println("Battle Speed:")
                 println("0 - Normal")
@@ -48,18 +33,24 @@ fun main() {
                     else -> battleSpeed = 500
                 }
             }
-            3 -> stressTest(readln().toInt())
+            3 -> stressTest(readln().toInt(),masterPokemonList,masterMoveList)
             4 -> {
                 println("Player 1 Name: ")
                 val trainerName = readln()
                 println("Player 2 Name: ")
                 val trainerName2 = readln()
-                multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false))
+                println("Play with official Pokemon Stats?")
+                val choice = readln()
+                when(choice){
+                    "Y" -> multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false),true,masterPokemonList,masterMoveList)
+                    else -> multiplayer(TrainerClass(trainerName,false),TrainerClass(trainerName2,false),false,masterPokemonList,masterMoveList)
+                }
+
             }
             5 -> {
                 println("Serialization Test")
                 var trainer = TrainerClass("CompressMe", false)
-                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,true)
+                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,true,true)
                 trainer.listPokemon()
                 val base64 = Base64.encode(trainer.serializeToJSON().toByteArray())
                 println("${base64}")
@@ -79,19 +70,21 @@ fun main() {
                 deserTrainer.listPokemon()
                 }
             6->{
-//                println("Appraise from master List")
-//                var trainer = TrainerClass("TEST", false)
-//                masterPokemonList.get("Fire"!!)
-//                trainer.currentPokemon.addToParty(masterPokemonList[0][0])
-//                trainer.currentPokemon.addToParty(masterPokemonList[0][40])
-//                trainer.appraisePokemon(0)
-//                trainer.appraisePokemon(1)
+                val trainer1 = TrainerClass("TEST2", true)
+                PokemonDataGenerator().generatePokemon(trainer1,6,4,false,true)
+                trainer1.appraisePokemon(0)
+                trainer1.appraisePokemon(1)
+                trainer1.appraisePokemon(2)
+                trainer1.appraisePokemon(3)
+                trainer1.appraisePokemon(4)
+                trainer1.appraisePokemon(5)
+
 
             }
             7 -> {
                 println("Test Case")
                 var trainer = TrainerClass("TEST", false)
-                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,false)
+                trainer = PokemonDataGenerator().generatePokemon(trainer,6,4,false,true)
                 var x = 0
                 while (x < trainer.currentPokemon.size()){
                     trainer.appraisePokemon(x)
@@ -103,13 +96,13 @@ fun main() {
     }
 
 
-fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass){
+fun multiplayer(trainer1:TrainerClass, trainer2:TrainerClass, gameMode:Boolean = true, pokemonList: Map<String,List<PokemonClass>>, moveList: Map<String,List<PokemonMoveset>>){
     println("+---MULTIPLAYER BATTLE---+")
     println("${trainer1.trainerName} vs. ${trainer2.trainerName}")
     println("How many VS. Pokemon?")
     val opponentNum = readln().toInt()
-    PokemonDataGenerator().generatePokemon(trainer1,opponentNum,4,true)
-    PokemonDataGenerator().generatePokemon(trainer2,opponentNum,4,true)
+    PokemonDataGenerator().generatePokemon(trainer1,opponentNum,4,true,gameMode)
+    PokemonDataGenerator().generatePokemon(trainer2,opponentNum,4,true,gameMode)
     println("${trainer1.trainerName} has: ")
     trainer1.listPokemon()
     Thread.sleep(5000)
@@ -140,14 +133,14 @@ fun inferenceOak(trainer1:TrainerClass,trainer2:TrainerClass){
         infBattleStats.opponentWin -> println("PROF OAK: PROF OAK: You're foe's weak! Get'm ${infTrainer1.trainerName}!")
     }
 }
-fun quickBattle(trainer: TrainerClass){
+fun quickBattle(trainer: TrainerClass, gameMode:Boolean = true, pokemonList: Map<String,List<PokemonClass>>, moveList: Map<String,List<PokemonMoveset>>){
     println("+---QUICK BATTLE---+")
     println("${trainer.trainerName} vs. Rival")
     println("How many VS. Pokemon?")
     val opponentNum = readln().toInt()
     val rival = TrainerClass("Rival", true)
-    PokemonDataGenerator().generatePokemon(trainer,6,4,true)
-    PokemonDataGenerator().generatePokemon(rival,6,4,true)
+    PokemonDataGenerator().generatePokemon(trainer,6,4,true,gameMode)
+    PokemonDataGenerator().generatePokemon(rival,6,4,true,gameMode)
     println("Rival has: ")
     rival.listPokemon()
     Thread.sleep(5000)
@@ -156,7 +149,7 @@ fun quickBattle(trainer: TrainerClass){
     println("+---QUICK BATTLE END---+")
     return
 }
-fun stressTest(turnCounts:Int){
+fun stressTest(turnCounts:Int,pokemonList: Map<String,List<PokemonClass>>, moveList: Map<String,List<PokemonMoveset>>){
     battleSpeed = 0
     val startMillis = System.currentTimeMillis()
     println("+-------------+")
@@ -174,8 +167,8 @@ fun stressTest(turnCounts:Int){
         println("+-------EPOCH $count------+")
         val trainer1 = TrainerClass("TEST1", true)
         val trainer2 = TrainerClass("TEST2", true)
-        PokemonDataGenerator().generatePokemon(trainer1,6,4,false)
-        PokemonDataGenerator().generatePokemon(trainer2,6,4,false)
+        PokemonDataGenerator().generatePokemon(trainer1,6,4,false,true)
+        PokemonDataGenerator().generatePokemon(trainer2,6,4,false,true)
         trainer1.listPokemon()
         trainer2.listPokemon()
         inferenceOak(trainer1,trainer2)
@@ -195,8 +188,8 @@ fun stressTest(turnCounts:Int){
         val trainer1 = TrainerClass("TEST1", true)
         val trainer2 = TrainerClass("TEST2", true)
         val randomPokemonAmount = (1..6).random()
-        PokemonDataGenerator().generatePokemon(trainer1,randomPokemonAmount,4,false)
-        PokemonDataGenerator().generatePokemon(trainer2,randomPokemonAmount,4,false)
+        PokemonDataGenerator().generatePokemon(trainer1,randomPokemonAmount,4,false,true)
+        PokemonDataGenerator().generatePokemon(trainer2,randomPokemonAmount,4,false,true)
         trainer1.listPokemon()
         trainer2.listPokemon()
         val battleHandler = BattleHandler()

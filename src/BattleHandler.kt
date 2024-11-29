@@ -267,8 +267,8 @@ class BattleHandler {
         if(showMessage)println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
         if(showMessage)println("+-----------------+")
         val moveList = trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList
-        if(showMessage)println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} |")
-        if(showMessage)println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} |")
+        if(showMessage)println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} [${moveList.getMove(0).getType()}] | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} [${moveList.getMove(1).getType()}] |")
+        if(showMessage)println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} [${moveList.getMove(2).getType()}] | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} [${moveList.getMove(3).getType()}] |")
         if(showMessage)println("+-----------------+")
         if(showMessage)println("4 - BACK")
         print("CHOICE: ")
@@ -387,7 +387,13 @@ class BattleHandler {
         }
         //Start Damage calculation
         val modifier1 = (((2F * sourcePokemon.pokemonLevel.toFloat()) + 10F) / 250F)
-        val modifier2 = (sourcePokemon.pokemonATK.toFloat() / targetPokemon.pokemonDEF.toFloat())
+        //Special or Physical Check
+        var modifier2: Float
+        if (sourceMove.getAttackType() == "Physical"){
+            modifier2 = (sourcePokemon.pokemonATK.toFloat() / targetPokemon.pokemonDEF.toFloat())
+        }else{
+            modifier2 = (sourcePokemon.pokemonSPA.toFloat() / targetPokemon.pokemonSPE.toFloat())
+        }
         val baseDamage = basePower * STABvalue * effectivenessValue * critValue * listOf(0.85F,1F).random()
         val totalDamage = (modifier1 * modifier2) * baseDamage
         //Add to battleresult calc
