@@ -1,5 +1,13 @@
 import kotlin.math.roundToInt
-
+private val ANSI_RESET = "\u001B[0m";
+private val ANSI_BLACK = "\u001B[30m";
+private val ANSI_RED = "\u001B[31m";
+private val ANSI_GREEN = "\u001B[32m";
+private val ANSI_YELLOW = "\u001B[33m";
+private val ANSI_BLUE = "\u001B[34m";
+private val ANSI_PURPLE = "\u001B[35m";
+private val ANSI_CYAN = "\u001B[36m";
+private val ANSI_WHITE = "\u001B[37m";
 class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: Int? = null, baseInitATK:Int? = null, baseInitDEF:Int? = null, baseInitSPA:Int? = null, baseInitSPD:Int? = null, baseInitSPE:Int? = null){
     var pokemonName: String = Name
     var pokemonType: String = elementType
@@ -67,7 +75,7 @@ class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: I
     }
     fun getName():String{
         if (shinyValue == shinyIndicator){
-            return ".°˖✧${pokemonName}✧˖°."
+            return ANSI_CYAN + ".°˖✧${pokemonName}✧˖°." + ANSI_RESET
         }
         else return pokemonName
     }

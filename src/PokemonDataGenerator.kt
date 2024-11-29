@@ -3,7 +3,15 @@ import org.jetbrains.kotlinx.dataframe.*
 import org.jetbrains.kotlinx.dataframe.io.*
 import java.io.File
 
-
+private val ANSI_RESET = "\u001B[0m";
+private val ANSI_BLACK = "\u001B[30m";
+private val ANSI_RED = "\u001B[31m";
+private val ANSI_GREEN = "\u001B[32m";
+private val ANSI_YELLOW = "\u001B[33m";
+private val ANSI_BLUE = "\u001B[34m";
+private val ANSI_PURPLE = "\u001B[35m";
+private val ANSI_CYAN = "\u001B[36m";
+private val ANSI_WHITE = "\u001B[37m";
 class PokemonDataGenerator() {
     //Type constants
     final val TYPE_INDEX = listOf(
@@ -515,9 +523,14 @@ class PokemonDataGenerator() {
         val pokemonMoveList = mutableListOf<PokemonMoveset>()
         var x = 0
         while (x < moveNameList.size){
-            if(moveType[x] == "Status"){x++;continue}
+            if(moveAttackTypeList[x] == "Status"){x++;continue}
             if(movePowerList[x] == 0){x++;continue}
-            pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
+            if(movePowerList[x] in (180..210)){
+                pokemonMoveList.add(PokemonMoveset(ANSI_YELLOW + ".°˖✧" + moveNameList[x] + ".°˖✧" + ANSI_RESET,moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
+            }
+            else{
+                pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
+            }
             x++
         }
         return pokemonMoveList
