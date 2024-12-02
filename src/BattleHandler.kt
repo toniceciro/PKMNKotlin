@@ -153,15 +153,13 @@ class BattleHandler {
         val pokemonSpeed2 = opponentPokemon.pokemonSPD
         if (pokemonSpeed2 > pokemonSpeed1){
             if (playerChoice2.chosenMove != null) damageHandler(opponentPokemon,playerPokemon,playerChoice2)
-            faintCheck = playerPokemon.checkIfFainted()
-            if(faintCheck) return
+            if(playerPokemon.checkIfFainted() || opponentPokemon.checkIfFainted()) return
             if (playerChoice.chosenMove != null) damageHandler(playerPokemon,opponentPokemon,playerChoice)
             return
         }
         if (pokemonSpeed2 < pokemonSpeed1){
             if (playerChoice.chosenMove != null) damageHandler(playerPokemon,opponentPokemon,playerChoice)
-            faintCheck = opponentPokemon.checkIfFainted()
-            if(faintCheck) return
+            if(playerPokemon.checkIfFainted() || opponentPokemon.checkIfFainted()) return
             if (playerChoice2.chosenMove != null) damageHandler(opponentPokemon,playerPokemon,playerChoice2)
             return
         }
@@ -216,6 +214,11 @@ class BattleHandler {
                 if(showMessage)println(ANSI_RED + "${sourcePokemon.getName()}'s attack missed!" + ANSI_RESET)
                 Thread.sleep(battleSpeed)
             }
+        }
+        //EDGE CASE FOR SELF_DESTRUCT
+        val faintList = listOf("Self-Destruct","Explosion","Memento","Healing Wish","Lunar Dance","Final Gambit","Misty Explosion")
+        if(faintList.contains(sourceChoice.chosenMove!!.getName())){
+            sourcePokemon.damageHP(sourcePokemon.pokemonMaxHP.toInt())
         }
         //Reduce HP of target Pokemon
         targetPokemon.damageHP(battleResult.damageAmount)

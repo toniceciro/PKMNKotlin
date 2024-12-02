@@ -76,11 +76,11 @@ class PokemonClass (Name: String, elementType: String, level: Int,
     }
     fun getName():String{
         var pkName = pokemonName
+        if ((baseHP+baseATK+baseDEF+baseSPA+baseSPD+baseSPE) >= 570){
+            pkName = "${ANSI_CYAN}✦$ANSI_RESET"+ pkName + "${ANSI_CYAN}✦$ANSI_RESET"
+        }
         if (shinyValue == shinyIndicator){
             pkName = ANSI_YELLOW + ".°˖✩${pkName}✩˖°." + ANSI_RESET
-        }
-        if ((baseHP+baseATK+baseDEF+baseSPA+baseSPD+baseSPE) >= 600){
-            pkName = pkName + "${ANSI_CYAN}✦$ANSI_RESET"
         }
         return pkName
     }
