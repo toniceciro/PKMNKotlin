@@ -8,7 +8,8 @@ private val ANSI_BLUE = "\u001B[34m";
 private val ANSI_PURPLE = "\u001B[35m";
 private val ANSI_CYAN = "\u001B[36m";
 private val ANSI_WHITE = "\u001B[37m";
-class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: Int? = null, baseInitATK:Int? = null, baseInitDEF:Int? = null, baseInitSPA:Int? = null, baseInitSPD:Int? = null, baseInitSPE:Int? = null){
+class PokemonClass (Name: String, elementType: String, level: Int,
+                    baseInitHP: Int? = null, baseInitATK:Int? = null, baseInitDEF:Int? = null, baseInitSPA:Int? = null, baseInitSPD:Int? = null, baseInitSPE:Int? = null){
     var pokemonName: String = Name
     var pokemonType: String = elementType
     var pokemonLevel: Int = level
@@ -74,10 +75,14 @@ class PokemonClass (Name: String, elementType: String, level: Int, baseInitHP: I
         }
     }
     fun getName():String{
+        var pkName = pokemonName
         if (shinyValue == shinyIndicator){
-            return ANSI_CYAN + ".°˖✧${pokemonName}✧˖°." + ANSI_RESET
+            pkName = ANSI_YELLOW + ".°˖✩${pkName}✩˖°." + ANSI_RESET
         }
-        else return pokemonName
+        if ((baseHP+baseATK+baseDEF+baseSPA+baseSPD+baseSPE) >= 600){
+            pkName = pkName + "${ANSI_CYAN}✦$ANSI_RESET"
+        }
+        return pkName
     }
     fun checkHP():pokemonHealthValues{
         return pokemonHealthValues(pokemonCurrentHP.toInt(), pokemonMaxHP.toInt())

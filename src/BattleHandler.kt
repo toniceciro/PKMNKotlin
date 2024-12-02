@@ -398,7 +398,7 @@ class BattleHandler {
         if (sourceMove.getAttackType() == "Physical"){
             modifier2 = (sourcePokemon.pokemonATK.toFloat() / targetPokemon.pokemonDEF.toFloat())
         }else{
-            modifier2 = (sourcePokemon.pokemonSPA.toFloat() / targetPokemon.pokemonSPE.toFloat())
+            modifier2 = (sourcePokemon.pokemonSPA.toFloat() / targetPokemon.pokemonSPD.toFloat())
         }
         val baseDamage = basePower * STABvalue * effectivenessValue * critValue * listOf(0.85F,1F).random()
         val totalDamage = (modifier1 * modifier2) * baseDamage
