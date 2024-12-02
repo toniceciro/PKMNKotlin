@@ -142,6 +142,7 @@ fun quickBattle(trainer: TrainerClass, gameMode:Boolean = true){
     PokemonDataGenerator().generatePokemon(rival,6,4,true,gameMode)
     println("Rival has: ")
     rival.listPokemon()
+    inferenceOak(trainer,rival)
     Thread.sleep(5000)
     val battleHandler = BattleHandler()
     battleHandler.battleMain(trainer,rival)
@@ -170,7 +171,6 @@ fun stressTest(turnCounts:Int){
         PokemonDataGenerator().generatePokemon(trainer2,6,4,false,true)
         trainer1.listPokemon()
         trainer2.listPokemon()
-        inferenceOak(trainer1,trainer2)
         val battleHandler = BattleHandler()
         val battleStats = battleHandler.battleMain(trainer1,trainer2)
         when(battleStats.playerWin){
@@ -210,6 +210,7 @@ fun stressTest(turnCounts:Int){
     println("Average Turn Count: ${totalTurnCount.average()}")
     println("Min Turn Count: ${totalTurnCount.min()}")
     println("Max Turn Count: ${totalTurnCount.max()}")
+
     println("+----+")
     println("Battle Stats (Classic):")
     println("Player 1 Wins: $winRandStat1")
@@ -219,8 +220,17 @@ fun stressTest(turnCounts:Int){
     println("Average Turn Count: ${totalRandTurnCount.average()}")
     println("Min Turn Count: ${totalRandTurnCount.min()}")
     println("Max Turn Count: ${totalRandTurnCount.max()}")
+
     println("+----+")
     println("Execution Time: ${endMillis-startMillis}")
+    println("+----+")
+    try{
+        println("Battles/second: ${(turnCounts.toLong() * 2L)/((endMillis-startMillis)/100L)}")
+    }
+    catch(e: Exception){
+        println("Battles/second: N/A")
+    }
+
     battleSpeed = 1000
 }
 

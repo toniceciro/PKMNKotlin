@@ -55,14 +55,16 @@ class BattleHandler {
             opponentChoice.chosenMove = null; opponentChoice.switchToIndex = null
             //Check if player pokemon fainted
             playerChoice = battleFaintHandler(player,player2,playerChoice, opponentChoice)
-            if (playerChoice.isTrainerDefeated) break
+            //Check and end battle if any trainer is defeated
+            if (playerChoice.isTrainerDefeated || opponentChoice.isTrainerDefeated) break
             //Check if player switched pokemon
-            playerChoice = battleSwitchHandler(player,playerChoice,false)
+            playerChoice = battleSwitchHandler(player,playerChoice,true)
             //Check if opponent pokemon fainted
             opponentChoice = battleFaintHandler(player2,player,opponentChoice, playerChoice)
-            if (opponentChoice.isTrainerDefeated) break
+            //Check and end battle if any trainer is defeated
+            if (playerChoice.isTrainerDefeated || opponentChoice.isTrainerDefeated) break
             //Check if opponent switch pokemon
-            opponentChoice = battleSwitchHandler(player2,opponentChoice,false)
+            opponentChoice = battleSwitchHandler(player2,opponentChoice,true)
             if (!isBattleFinished){
                 //Prompts the trainer with the fastest pokemon first, else randomly choose
                 val player1Speed = player.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).pokemonSPD
@@ -105,7 +107,7 @@ class BattleHandler {
                         }
                     }
                 }
-                if(showMessage)println(ANSI_PURPLE + "+---Turn ${turnCount}---+" + ANSI_RESET)
+                if(showMessage)println(ANSI_RED + "+$ANSI_YELLOW-$ANSI_GREEN-$ANSI_CYAN-${ANSI_BLUE}T${ANSI_PURPLE}U${ANSI_RED}R${ANSI_YELLOW}N${ANSI_GREEN}-$ANSI_CYAN${turnCount}$ANSI_BLUE-$ANSI_PURPLE-$ANSI_RED-$ANSI_YELLOW+" + ANSI_RESET)
                 mainFightHandler(player,player2,playerChoice,opponentChoice)
                 Thread.sleep(battleSpeed)
                 turnCount++
@@ -123,7 +125,7 @@ class BattleHandler {
     //Main battle functions
     private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:playerChoiceData, opponentChoice: playerChoiceData):playerChoiceData{
         if(sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkIfFainted()){
-            if(showMessage)println("$ANSI_RED${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} fainted!$ANSI_RESET")
+            if(showMessage)println("$ANSI_RED${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}$ANSI_RED fainted!$ANSI_RESET")
             sourceTrainer.currentPokemon.removePokemon(playerChoice.currentPokemonIndex)
             if(!sourceTrainer.currentPokemon.isEmpty()){
                 if (playerChoice.isAI == true) {
@@ -184,7 +186,7 @@ class BattleHandler {
     }
     private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: playerChoiceData){
         sourceChoice.chosenMove?.removePP()
-        if(showMessage)println(ANSI_PURPLE + "${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
+        if(showMessage)println(ANSI_PURPLE + "${sourcePokemon.getName()}$ANSI_PURPLE used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
@@ -223,8 +225,11 @@ class BattleHandler {
         //Reduce HP of target Pokemon
         targetPokemon.damageHP(battleResult.damageAmount)
     }
-    private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, isInitial: Boolean = false):playerChoiceData{
+    private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, forcedSwitch: Boolean = false):playerChoiceData{
         if(playerChoice.switchToIndex != null){
+            if(!forcedSwitch){
+                println(ANSI_CYAN + "${trainer.trainerName} withdrew ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
+            }
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
             if(showMessage)println(ANSI_GREEN + "${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
@@ -318,7 +323,7 @@ class BattleHandler {
         while (x < 4 && !didOpponentSwitch){
             when(player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).checkIfEmpty()){
                 false -> effectivityList.add((effectivenessValue(playerPokemonType, player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getType())) * player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getPower() * (player2.currentPokemon.getPokemon(opponentPokemonIndex).pokemonMoveList.getMove(x).getAccuracy() * 0.25F))
-                true -> effectivityList.add(-1F)
+                true -> effectivityList.add(1F)
             }
             x++
         }
