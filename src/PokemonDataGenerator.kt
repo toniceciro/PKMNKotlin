@@ -526,7 +526,7 @@ class PokemonDataGenerator() {
             if(moveAttackTypeList[x] == "Status"){x++;continue}
             if(movePowerList[x] == 0){x++;continue}
             if(movePowerList[x] in (180..210)){
-                pokemonMoveList.add(PokemonMoveset(ANSI_YELLOW + ".°˖✧" + moveNameList[x] + ".°˖✧" + ANSI_RESET,moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
+                pokemonMoveList.add(PokemonMoveset(ANSI_CYAN + ".°˖✧" + moveNameList[x] + ".°˖✧" + ANSI_RESET,moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))
             }
             else{
                 pokemonMoveList.add(PokemonMoveset(moveNameList[x],moveType[x],movePowerList[x],movePPList[x],moveAccuracyList[x],moveAttackTypeList[x]))

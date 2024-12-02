@@ -105,7 +105,7 @@ class BattleHandler {
                         }
                     }
                 }
-                if(showMessage)println(ANSI_CYAN + "+---Turn ${turnCount}---+" + ANSI_RESET)
+                if(showMessage)println(ANSI_PURPLE + "+---Turn ${turnCount}---+" + ANSI_RESET)
                 mainFightHandler(player,player2,playerChoice,opponentChoice)
                 Thread.sleep(battleSpeed)
                 turnCount++
@@ -186,7 +186,7 @@ class BattleHandler {
     }
     private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: playerChoiceData){
         sourceChoice.chosenMove?.removePP()
-        if(showMessage)println(ANSI_YELLOW + "${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
+        if(showMessage)println(ANSI_PURPLE + "${sourcePokemon.getName()} used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
@@ -205,7 +205,7 @@ class BattleHandler {
         }
         when (battleResult.damageAmount <= 0){
             false -> {
-                if(showMessage)println(ANSI_YELLOW + "Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.getName()}! ($ANSI_GREEN${targetPokemon.pokemonCurrentHP.toInt()}$ANSI_YELLOW ->$ANSI_RED ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}}$ANSI_YELLOW)$ANSI_RESET")
+                if(showMessage)println(ANSI_PURPLE + "Dealt ${battleResult.damageAmount} HP of damage to ${targetPokemon.getName()}! ($ANSI_GREEN${targetPokemon.pokemonCurrentHP.toInt()}$ANSI_YELLOW ->$ANSI_RED ${if (targetPokemon.pokemonCurrentHP - battleResult.damageAmount < 1){0}else{(targetPokemon.pokemonCurrentHP - battleResult.damageAmount).toInt()}}$ANSI_YELLOW)$ANSI_RESET")
                 Thread.sleep(battleSpeed)
             }
             (battleResult.isNotAffected) -> {
@@ -349,9 +349,9 @@ class BattleHandler {
         var switchChoice = 0
         var isMenu = true
         while(isMenu){
-            if(showMessage)println("+--------------------+")
+            if(showMessage)println("$ANSI_PURPLE+--------------------+")
             if(showMessage)println("${trainerData.trainerName}, select a pokemon to switch to: ")
-            if(showMessage)println("+-----------------+")
+            if(showMessage)println("+-----------------+$ANSI_RESET")
             trainerData.listPokemon()
             if(!forcedFlag){if(showMessage)println("6 - BACK")}
             print("CHOICE:")
