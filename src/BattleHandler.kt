@@ -228,7 +228,7 @@ class BattleHandler {
     private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, forcedSwitch: Boolean = false):playerChoiceData{
         if(playerChoice.switchToIndex != null){
             if(!forcedSwitch){
-                println(ANSI_CYAN + "${trainer.trainerName} withdrew ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
+                if(showMessage)println(ANSI_CYAN + "${trainer.trainerName} withdrew ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
             }
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
