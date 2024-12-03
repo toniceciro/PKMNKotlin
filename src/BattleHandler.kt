@@ -177,6 +177,7 @@ class BattleHandler {
         sourceChoice.chosenMove?.removePP()
         if(showMessage)println(ANSI_PURPLE + "${sourcePokemon.getName()}$ANSI_PURPLE used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
+        sourceChoice.chosenMove?.checkIfEmpty()
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
             if(showMessage)println(ANSI_YELLOW + "Critical hit!" + ANSI_RESET)
