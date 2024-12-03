@@ -46,14 +46,15 @@ class InputHandler {
         var currentChoice = playerChoice
         currentChoice.chosenMove = null; currentChoice.switchToIndex = null
         while(  (currentChoice.chosenMove == null && currentChoice.switchToIndex == null)  ){
-            if(showMessage)println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
-            if(showMessage)println("${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()})")
-            if(showMessage)proportionalBarPrinter(trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP,trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP)
-            if(showMessage)println(" | ${ANSI_GREEN}HP: ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP} $ANSI_RESET")
-            if(showMessage)println("${trainerData.trainerName}, what will you do?")
-            if(showMessage)println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
-            if(showMessage)println("$ANSI_YELLOW|0 - FIGHT$ANSI_RED | 1 - Pokemon |$ANSI_RESET")
-            if(showMessage)println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
+            println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
+            pokemonBarPrinter(trainerData.currentPokemon.size())
+            println("${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()})")
+            proportionalBarPrinter(trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP,trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP)
+            println(" | ${ANSI_GREEN}HP: ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP} $ANSI_RESET")
+            println("${trainerData.trainerName}, what will you do?")
+            println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
+            println("$ANSI_YELLOW|0 - FIGHT$ANSI_RED | 1 - Pokemon |$ANSI_RESET")
+            println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
             print(ANSI_YELLOW + "CHOICE: "+ ANSI_RESET)
             try{
                 choiceIndex = readln().toInt()
@@ -63,21 +64,20 @@ class InputHandler {
                     else -> currentChoice = PlayerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
                 }
             }catch(e: Exception){
-                print("CHOICE: ")
                 continue
             }
         }
         return currentChoice
     }
     private fun fightSelector(trainerData: TrainerClass, pokemonIndex: Int): PokemonMoveset?{
-        if(showMessage)println("+--------------------+")
-        if(showMessage)println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
-        if(showMessage)println("+-----------------+")
+        println("+--------------------+")
+        println("What should ${trainerData.currentPokemon.getPokemon(pokemonIndex).getName()} do?")
+        println("+-----------------+")
         val moveList = trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList
-        if(showMessage)println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} [${moveList.getMove(0).getType()}] | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} [${moveList.getMove(1).getType()}] |")
-        if(showMessage)println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} [${moveList.getMove(2).getType()}] | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} [${moveList.getMove(3).getType()}] |")
-        if(showMessage)println("+-----------------+")
-        if(showMessage)println("4 - BACK")
+        println("| 0 - ${moveList.getMove(0).getName()} {Power: ${moveList.getMove(0).getPower()} || PP: ${moveList.getMove(0).getPP().currentPP}/${moveList.getMove(0).getPP().maxPP}} [${moveList.getMove(0).getType()}] | 1 - ${moveList.getMove(1).getName()} {Power: ${moveList.getMove(1).getPower()} || PP: ${moveList.getMove(1).getPP().currentPP}/${moveList.getMove(1).getPP().maxPP}} [${moveList.getMove(1).getType()}] |")
+        println("| 2 - ${moveList.getMove(2).getName()} {Power: ${moveList.getMove(2).getPower()} || PP: ${moveList.getMove(2).getPP().currentPP}/${moveList.getMove(2).getPP().maxPP}} [${moveList.getMove(2).getType()}] | 3 - ${moveList.getMove(3).getName()} {Power: ${moveList.getMove(3).getPower()} || PP: ${moveList.getMove(3).getPP().currentPP}/${moveList.getMove(3).getPP().maxPP}} [${moveList.getMove(3).getType()}] |")
+        println("+-----------------+")
+        println("4 - BACK")
         print("CHOICE: ")
         var fightChoice = 0
         var isMenu = true
@@ -87,7 +87,6 @@ class InputHandler {
                 if(!(0..4).contains(fightChoice)){isMenu = true; print("CHOICE:")}
                 else{isMenu = false}
             }catch(e: Exception){
-                if(showMessage)println("Try again")
                 print("CHOICE:")
                 continue
             }
@@ -150,11 +149,11 @@ class InputHandler {
         var switchChoice = 0
         var isMenu = true
         while(isMenu){
-            if(showMessage)println("$ANSI_PURPLE+--------------------+")
-            if(showMessage)println("${trainerData.trainerName}, select a pokemon to switch to: ")
-            if(showMessage)println("+-----------------+$ANSI_RESET")
+            println("$ANSI_PURPLE+--------------------+")
+            println("${trainerData.trainerName}, select a pokemon to switch to: ")
+            println("+-----------------+$ANSI_RESET")
             trainerData.listPokemon()
-            if(!forcedFlag){if(showMessage)println("6 - BACK")}
+            if(!forcedFlag){println("6 - BACK")}
             print("CHOICE:")
             try{
                 switchChoice = readln().toInt()
@@ -162,8 +161,6 @@ class InputHandler {
                 if((0..5).contains(switchChoice)){return switchChoice}
                 else{isMenu = true}
             }catch(e: Exception){
-                if(showMessage)println("Try again")
-                print("CHOICE:")
                 continue
             }
         }
@@ -193,6 +190,24 @@ class InputHandler {
             x++
         }
         print(ANSI_RESET)
+    }
+    private fun pokemonBarPrinter(currentValue:Int, maxValue: Int = 6){
+        val maxBarCount = 6F
+        var proportion = (maxBarCount * (currentValue.toFloat()/maxValue.toFloat())).roundToInt()
+        if(proportion == 0){proportion = 1}
+        val whiteSpace = maxBarCount - proportion
+        var x = 0
+        print("《")
+        while (x < proportion){
+            print("${ANSI_BGREEN}℗")
+            x++
+        }
+        x = 0
+        while (x < whiteSpace){
+            print("${ANSI_BRED}☒")
+            x++
+        }
+        println("$ANSI_RESET》")
     }
 }
 data class PlayerChoiceData(var chosenMove: PokemonMoveset?, var currentPokemonIndex: Int, var switchToIndex: Int?, var isTrainerDefeated: Boolean = false, var isAI: Boolean = false)
