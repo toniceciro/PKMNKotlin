@@ -217,7 +217,7 @@ class BattleHandler {
         }
         //EDGE CASE FOR SELF_DESTRUCT
         val faintList = listOf("Self-Destruct","Explosion","Memento","Healing Wish","Lunar Dance","Final Gambit","Misty Explosion")
-        if(faintList.contains(sourceChoice.chosenMove!!.getName())){
+        if(faintList.contains(sourceChoice.chosenMove!!.getRawName())){
             sourcePokemon.damageHP(sourcePokemon.pokemonMaxHP.toInt())
         }
         //Reduce HP of target Pokemon

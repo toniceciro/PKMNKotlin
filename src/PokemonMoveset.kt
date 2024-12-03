@@ -62,6 +62,9 @@ class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPo
         }
         return ANSI_TYPE + name + ANSI_RESET
     }
+    fun getRawName():String{
+        return name
+    }
     fun getType(): String {
         return type
     }
