@@ -9,6 +9,14 @@ private val ANSI_BLUE = "\u001B[34m";
 private val ANSI_PURPLE = "\u001B[35m";
 private val ANSI_CYAN = "\u001B[36m";
 private val ANSI_WHITE = "\u001B[37m";
+private val ANSI_GRAY = "\u001B[90m";
+private val ANSI_BRED = "\u001B[91m";
+private val ANSI_BGREEN = "\u001B[92m";
+private val ANSI_BYELLOW = "\u001B[93m";
+private val ANSI_BBLUE = "\u001B[94m";
+private val ANSI_BPURPLE = "\u001B[95m";
+private val ANSI_BCYAN = "\u001B[96m";
+private val ANSI_BWHITE = "\u001B[97m";
 class BattleHandler {
 
     fun battleMain(player:TrainerClass, player2:TrainerClass):battleData{
@@ -21,25 +29,25 @@ class BattleHandler {
         //Randomize who gets to send out pokemon first
         val initialPlayerPokemonIndex: Int?
         val initialOpponentPokemonIndex: Int?
-        var playerChoice = playerChoiceData(null,0,null)
-        var opponentChoice = playerChoiceData(null,0,null)
+        var playerChoice = PlayerChoiceData(null,0,null)
+        var opponentChoice = PlayerChoiceData(null,0,null)
         when((0..1).random()){
             0 ->{
                 //Send out Pokemon
                 initialPlayerPokemonIndex = InputHandler().switchChoiceHandler(player,player2,opponentChoice)
-                playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
+                playerChoice = PlayerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
                 //Send out opponent Pokemon
                 initialOpponentPokemonIndex = InputHandler().switchChoiceHandler(player2,player,playerChoice)
-                opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
+                opponentChoice = PlayerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
 
             }
             1 ->{
                 //Send out opponent Pokemon
                 initialOpponentPokemonIndex = InputHandler().switchChoiceHandler(player2,player,playerChoice)
-                opponentChoice = playerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
+                opponentChoice = PlayerChoiceData(null,initialOpponentPokemonIndex!!,initialOpponentPokemonIndex,false,player2.isAI)
                 //Send out Pokemon
                 initialPlayerPokemonIndex = InputHandler().switchChoiceHandler(player,player2,opponentChoice)
-                playerChoice = playerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
+                playerChoice = PlayerChoiceData(null,initialPlayerPokemonIndex!!,initialPlayerPokemonIndex,false,player.isAI)
             }
         }
         playerChoice = battleSwitchHandler(player,playerChoice,true)
@@ -118,13 +126,13 @@ class BattleHandler {
         return battleData(!playerChoice.isTrainerDefeated,!opponentChoice.isTrainerDefeated,turnCount)
     }
     //Main battle functions
-    private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:playerChoiceData, opponentChoice: playerChoiceData):playerChoiceData{
+    private fun battleFaintHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, playerChoice:PlayerChoiceData, opponentChoice: PlayerChoiceData):PlayerChoiceData{
         if(sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkIfFainted()){
             if(showMessage)println("$ANSI_RED${sourceTrainer.trainerName}'s ${sourceTrainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}$ANSI_RED fainted!$ANSI_RESET")
             sourceTrainer.currentPokemon.removePokemon(playerChoice.currentPokemonIndex)
             if(!sourceTrainer.currentPokemon.isEmpty()){
                     val switchPlayerPokemonIndex = InputHandler().switchChoiceHandler(sourceTrainer,targetTrainer,opponentChoice)
-                    return playerChoiceData(null,playerChoice.currentPokemonIndex,switchPlayerPokemonIndex,playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    return PlayerChoiceData(null,playerChoice.currentPokemonIndex,switchPlayerPokemonIndex,playerChoice.isTrainerDefeated,playerChoice.isAI)
             }
             else{
                 if(showMessage)println(ANSI_RED + "${sourceTrainer.trainerName} has no more usable Pokemon" + ANSI_RESET)
@@ -135,7 +143,7 @@ class BattleHandler {
         }
         return playerChoice
     }
-    private fun mainFightHandler(player:TrainerClass, player2:TrainerClass, playerChoice:playerChoiceData, playerChoice2:playerChoiceData){
+    private fun mainFightHandler(player:TrainerClass, player2:TrainerClass, playerChoice:PlayerChoiceData, playerChoice2:PlayerChoiceData){
         val playerPokemon = player.currentPokemon.getPokemon(playerChoice.currentPokemonIndex)
         val opponentPokemon = player2.currentPokemon.getPokemon(playerChoice2.currentPokemonIndex)
         var faintCheck = false
@@ -173,23 +181,23 @@ class BattleHandler {
             }
         }
     }
-    private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: playerChoiceData){
+    private fun damageHandler(sourcePokemon: PokemonClass, targetPokemon: PokemonClass,sourceChoice: PlayerChoiceData){
         sourceChoice.chosenMove?.removePP()
         if(showMessage)println(ANSI_PURPLE + "${sourcePokemon.getName()}$ANSI_PURPLE used ${sourceChoice.chosenMove?.getName()}!" + ANSI_RESET)
         val battleResult = calculateDamage(sourcePokemon,sourceChoice.chosenMove!!,targetPokemon)
         sourceChoice.chosenMove?.checkIfEmpty()
         Thread.sleep(battleSpeed)
         if(battleResult.isCritical && battleResult.damageAmount > 0) {
-            if(showMessage)println(ANSI_YELLOW + "Critical hit!" + ANSI_RESET)
+            if(showMessage)println(ANSI_BYELLOW + "Critical hit!" + ANSI_RESET)
             Thread.sleep(battleSpeed)
         }
         when{
             battleResult.effectiveVal > 1.0F && battleResult.damageAmount > 0 -> {
-                if(showMessage)println(ANSI_GREEN + "It's super effective!" + ANSI_RESET)
+                if(showMessage)println(ANSI_BGREEN + "It's super effective!" + ANSI_RESET)
                 Thread.sleep(battleSpeed)
             }
             battleResult.effectiveVal < 1.0F && battleResult.damageAmount > 0 -> {
-                if(showMessage)println(ANSI_RED + "It's not very effective..." + ANSI_RESET)
+                if(showMessage)println(ANSI_WHITE + "It's not very effective..." + ANSI_RESET)
                 Thread.sleep(battleSpeed)
             }
         }
@@ -203,7 +211,7 @@ class BattleHandler {
                 Thread.sleep(battleSpeed)
             }
             else -> {
-                if(showMessage)println(ANSI_RED + "${sourcePokemon.getName()}'s attack missed!" + ANSI_RESET)
+                if(showMessage)println(ANSI_WHITE + "${sourcePokemon.getName()}'s attack missed!" + ANSI_RESET)
                 Thread.sleep(battleSpeed)
             }
         }
@@ -215,14 +223,14 @@ class BattleHandler {
         //Reduce HP of target Pokemon
         targetPokemon.damageHP(battleResult.damageAmount)
     }
-    private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:playerChoiceData, forcedSwitch: Boolean = false):playerChoiceData{
+    private fun battleSwitchHandler(trainer:TrainerClass, playerChoice:PlayerChoiceData, forcedSwitch: Boolean = false):PlayerChoiceData{
         if(playerChoice.switchToIndex != null){
             if(!forcedSwitch){
-                if(showMessage)println(ANSI_CYAN + "${trainer.trainerName} withdrew ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
+                if(showMessage)println(ANSI_BCYAN + "${trainer.trainerName} withdrew ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
             }
             playerChoice.currentPokemonIndex = playerChoice.switchToIndex!!
             playerChoice.switchToIndex = null
-            if(showMessage)println(ANSI_GREEN + "${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
+            if(showMessage)println(ANSI_BGREEN + "${trainer.trainerName} sent out ${trainer.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()}!" + ANSI_RESET)
             Thread.sleep(battleSpeed)
             return playerChoice
         }

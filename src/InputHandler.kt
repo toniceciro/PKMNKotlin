@@ -1,3 +1,5 @@
+import kotlin.math.roundToInt
+
 private val ANSI_RESET = "\u001B[0m";
 private val ANSI_BLACK = "\u001B[30m";
 private val ANSI_RED = "\u001B[31m";
@@ -7,9 +9,17 @@ private val ANSI_BLUE = "\u001B[34m";
 private val ANSI_PURPLE = "\u001B[35m";
 private val ANSI_CYAN = "\u001B[36m";
 private val ANSI_WHITE = "\u001B[37m";
+private val ANSI_GRAY = "\u001B[90m";
+private val ANSI_BRED = "\u001B[91m";
+private val ANSI_BGREEN = "\u001B[92m";
+private val ANSI_BYELLOW = "\u001B[93m";
+private val ANSI_BBLUE = "\u001B[94m";
+private val ANSI_BPURPLE = "\u001B[95m";
+private val ANSI_BCYAN = "\u001B[96m";
+private val ANSI_BWHITE = "\u001B[97m";
 class InputHandler {
     //Input from player/AI Handlers
-    fun choiceHandler(sourcePlayer:TrainerClass, opponentPlayer:TrainerClass, sourcePlayerChoice:playerChoiceData, opponentPlayerChoice:playerChoiceData): playerChoiceData{
+    fun choiceHandler(sourcePlayer:TrainerClass, opponentPlayer:TrainerClass, sourcePlayerChoice:PlayerChoiceData, opponentPlayerChoice:PlayerChoiceData): PlayerChoiceData{
         if (sourcePlayer.isAI){
             val choiceResult = opponentFightHandler(sourcePlayer,opponentPlayer,sourcePlayerChoice,opponentPlayerChoice)
             return choiceResult
@@ -18,7 +28,7 @@ class InputHandler {
             return choiceResult
         }
     }
-    fun switchChoiceHandler(sourceTrainer:TrainerClass,targetTrainer:TrainerClass?,targetChoiceData:playerChoiceData?,forcedFlag: Boolean = false):Int?{
+    fun switchChoiceHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass?, targetChoiceData:PlayerChoiceData?, forcedFlag: Boolean = false):Int?{
         if(sourceTrainer.isAI && targetTrainer != null && targetChoiceData != null){
             return opponentSwitchSelector(sourceTrainer, targetTrainer, targetChoiceData)
         }
@@ -29,7 +39,7 @@ class InputHandler {
             return switchSelector(sourceTrainer,true)
         }
     }
-    private fun playerHandler(trainerData: TrainerClass, playerChoice: playerChoiceData): playerChoiceData{
+    private fun playerHandler(trainerData: TrainerClass, playerChoice: PlayerChoiceData): PlayerChoiceData{
         val pokemonIndex = playerChoice.currentPokemonIndex
         var isMenu: Boolean = true
         var choiceIndex: Int = 0
@@ -37,7 +47,9 @@ class InputHandler {
         currentChoice.chosenMove = null; currentChoice.switchToIndex = null
         while(  (currentChoice.chosenMove == null && currentChoice.switchToIndex == null)  ){
             if(showMessage)println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
-            if(showMessage)println("${trainerData.trainerName}'s ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()}) | $ANSI_GREEN HP: ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP} $ANSI_RESET")
+            if(showMessage)println("${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getName()} (LV ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).getLevel()})")
+            if(showMessage)proportionalBarPrinter(trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP,trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP)
+            if(showMessage)println(" | ${ANSI_GREEN}HP: ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().currentHP} / ${trainerData.currentPokemon.getPokemon(playerChoice.currentPokemonIndex).checkHP().maxHP} $ANSI_RESET")
             if(showMessage)println("${trainerData.trainerName}, what will you do?")
             if(showMessage)println("$ANSI_YELLOW+-----------------+$ANSI_RESET")
             if(showMessage)println("$ANSI_YELLOW|0 - FIGHT$ANSI_RED | 1 - Pokemon |$ANSI_RESET")
@@ -46,9 +58,9 @@ class InputHandler {
             try{
                 choiceIndex = readln().toInt()
                 when (choiceIndex){
-                    0 -> currentChoice = playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
-                    1 -> currentChoice = playerChoiceData(null, pokemonIndex,switchSelector(trainerData),playerChoice.isTrainerDefeated,playerChoice.isAI)
-                    else -> currentChoice = playerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    0 -> currentChoice = PlayerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    1 -> currentChoice = PlayerChoiceData(null, pokemonIndex,switchSelector(trainerData),playerChoice.isTrainerDefeated,playerChoice.isAI)
+                    else -> currentChoice = PlayerChoiceData(fightSelector(trainerData, pokemonIndex), pokemonIndex, null,playerChoice.isTrainerDefeated,playerChoice.isAI)
                 }
             }catch(e: Exception){
                 print("CHOICE: ")
@@ -83,7 +95,7 @@ class InputHandler {
         if(fightChoice == 4){return null}
         else{return trainerData.currentPokemon.getPokemon(pokemonIndex).pokemonMoveList.getMove(fightChoice)}
     }
-    private fun opponentFightHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, sourceTrainerChoice:playerChoiceData, targetTrainerChoice:playerChoiceData):playerChoiceData{
+    private fun opponentFightHandler(sourceTrainer:TrainerClass, targetTrainer:TrainerClass, sourceTrainerChoice:PlayerChoiceData, targetTrainerChoice:PlayerChoiceData):PlayerChoiceData{
 
         val currentPokemonIndex = sourceTrainerChoice.currentPokemonIndex
         val currentHP = sourceTrainer.currentPokemon.getPokemon(currentPokemonIndex).checkHP().currentHP
@@ -119,10 +131,10 @@ class InputHandler {
                 }
             }
         }
-        if(didOpponentSwitch){return playerChoiceData(null,currentPokemonIndex,switchIndex,sourceTrainerChoice.isTrainerDefeated,sourceTrainerChoice.isAI)}
-        else{return playerChoiceData(sourceTrainer.currentPokemon.getPokemon(currentPokemonIndex).pokemonMoveList.getMove(bestMoveIndex),currentPokemonIndex,null,sourceTrainerChoice.isTrainerDefeated,sourceTrainerChoice.isAI)}
+        if(didOpponentSwitch){return PlayerChoiceData(null,currentPokemonIndex,switchIndex,sourceTrainerChoice.isTrainerDefeated,sourceTrainerChoice.isAI)}
+        else{return PlayerChoiceData(sourceTrainer.currentPokemon.getPokemon(currentPokemonIndex).pokemonMoveList.getMove(bestMoveIndex),currentPokemonIndex,null,sourceTrainerChoice.isTrainerDefeated,sourceTrainerChoice.isAI)}
     }
-    private fun opponentSwitchSelector(sourceTrainer:TrainerClass, targetTrainer: TrainerClass, targetTrainerChoice:playerChoiceData):Int{
+    private fun opponentSwitchSelector(sourceTrainer:TrainerClass, targetTrainer: TrainerClass, targetTrainerChoice:PlayerChoiceData):Int{
         val playerPokemonType = targetTrainer.currentPokemon.getPokemon(targetTrainerChoice.currentPokemonIndex).pokemonType
         var x = 0
         val effectivityList = mutableListOf<Float>()
@@ -157,5 +169,30 @@ class InputHandler {
         }
         return switchChoice
     }
+    private fun proportionalBarPrinter(currentValue:Int, maxValue: Int){
+        val maxBarCount = 17F
+        var proportion = (maxBarCount * (currentValue.toFloat()/maxValue.toFloat())).roundToInt()
+        if(proportion == 0){proportion = 1}
+        val whiteSpace = maxBarCount - proportion
+        var x = 0
+        while (x < proportion && proportion >= maxBarCount * 0.50F){
+            print("${ANSI_BGREEN}▓")
+            x++
+        }
+        while (x < proportion && (proportion < maxBarCount * 0.50F && proportion > maxBarCount * 0.25F)){
+            print("${ANSI_BYELLOW}▓")
+            x++
+        }
+        while (x < proportion && proportion < maxBarCount * 0.25F){
+            print("${ANSI_BRED}▓")
+            x++
+        }
+        x = 0
+        while (x < whiteSpace){
+            print("${ANSI_GREEN}░")
+            x++
+        }
+        print(ANSI_RESET)
+    }
 }
-data class playerChoiceData(var chosenMove: PokemonMoveset?, var currentPokemonIndex: Int, var switchToIndex: Int?, var isTrainerDefeated: Boolean = false, var isAI: Boolean = false)
+data class PlayerChoiceData(var chosenMove: PokemonMoveset?, var currentPokemonIndex: Int, var switchToIndex: Int?, var isTrainerDefeated: Boolean = false, var isAI: Boolean = false)
