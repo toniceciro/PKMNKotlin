@@ -166,8 +166,8 @@ class InputHandler {
         }
         return switchChoice
     }
-    private fun proportionalBarPrinter(currentValue:Int, maxValue: Int){
-        val maxBarCount = 17F
+    fun proportionalBarPrinter(currentValue:Int, maxValue: Int){
+        val maxBarCount = 20F
         var proportion = (maxBarCount * (currentValue.toFloat()/maxValue.toFloat())).roundToInt()
         if(proportion == 0){proportion = 1}
         val whiteSpace = maxBarCount - proportion
@@ -176,7 +176,7 @@ class InputHandler {
             print("${ANSI_BGREEN}▓")
             x++
         }
-        while (x < proportion && (proportion < maxBarCount * 0.50F && proportion > maxBarCount * 0.25F)){
+        while (x < proportion && (proportion < maxBarCount * 0.50F && proportion >= maxBarCount * 0.25F)){
             print("${ANSI_BYELLOW}▓")
             x++
         }
@@ -185,16 +185,23 @@ class InputHandler {
             x++
         }
         x = 0
-        while (x < whiteSpace){
+        while (x < whiteSpace && proportion >= maxBarCount * 0.50F){
             print("${ANSI_GREEN}░")
+            x++
+        }
+        while (x < whiteSpace && (proportion < maxBarCount * 0.50F && proportion >= maxBarCount * 0.25F)){
+            print("${ANSI_YELLOW}░")
+            x++
+        }
+        while (x < whiteSpace && proportion < maxBarCount * 0.25F){
+            print("${ANSI_RED}░")
             x++
         }
         print(ANSI_RESET)
     }
-    private fun pokemonBarPrinter(currentValue:Int, maxValue: Int = 6){
+    fun pokemonBarPrinter(currentValue:Int, maxValue: Int = 6){
         val maxBarCount = 6F
         var proportion = (maxBarCount * (currentValue.toFloat()/maxValue.toFloat())).roundToInt()
-        if(proportion == 0){proportion = 1}
         val whiteSpace = maxBarCount - proportion
         var x = 0
         print("《")

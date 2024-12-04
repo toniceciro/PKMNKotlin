@@ -16,6 +16,10 @@ fun main() {
         println("2 - Battle Speed")
         println("3 - Stress Test")
         println("4 - Multiplayer")
+        println("5 - Serialization Test")
+        println("6 - Appraise Test")
+        println("7 - Appraise Test2")
+        println("8 - UI Bar Test")
         val choice: String = readLine() ?: "0"
         when (choice.toInt()){
             0 -> quickBattle(TrainerClass("QUICKPLAY",false),true)
@@ -88,6 +92,31 @@ fun main() {
                 while (x < trainer.currentPokemon.size()){
                     trainer.appraisePokemon(x)
                     x++
+                }
+            }
+            8 -> {
+                var x = 0
+                while (x < 500){
+                    InputHandler().proportionalBarPrinter(x,500)
+                    println("$x / 500")
+                    Thread.sleep(5)
+                    x++
+                }
+                while (x > 0){
+                    InputHandler().proportionalBarPrinter(x,500)
+                    println("$x / 500")
+                    Thread.sleep(5)
+                    x--
+                }
+                while (x < 6){
+                    InputHandler().pokemonBarPrinter(x,6)
+                    Thread.sleep(5)
+                    x++
+                }
+                while (x > 0){
+                    InputHandler().pokemonBarPrinter(x,6)
+                    Thread.sleep(5)
+                    x--
                 }
             }
             }

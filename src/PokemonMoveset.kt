@@ -41,7 +41,7 @@ class PokemonMoveset(moveName: String, moveType: String, basePower: Int, powerPo
         var ANSI_TYPE = ANSI_RESET
         when(type){
             "Bug" -> ANSI_TYPE = ANSI_YELLOW
-            "Dark" -> ANSI_TYPE = ANSI_BLACK
+            "Dark" -> ANSI_TYPE = ANSI_GRAY
             "Dragon" -> ANSI_TYPE = ANSI_PURPLE
             "Electric" -> ANSI_TYPE = ANSI_BYELLOW
             "Fighting" -> ANSI_TYPE = ANSI_BYELLOW
