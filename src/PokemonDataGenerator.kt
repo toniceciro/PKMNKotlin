@@ -486,7 +486,6 @@ class PokemonDataGenerator() {
             masterPokemonList.put(typeIndex[x],pokemonTypeList)
             x++
         }
-        println("INFO: Loaded ${masterPokemonList.keys.size} Pokemon Types & ${masterPokemonList.values.size} Pokemon from CSV!")
         return masterPokemonList
     }
     private fun generateMovesFromCSV():Map<String,List<PokemonMoveset>>{
@@ -497,7 +496,6 @@ class PokemonDataGenerator() {
             moveDatalist[5] as List<String>
         )
         val parsedMap = parseMoveMap(moveList)
-        println("INFO: Loaded ${parsedMap.values.size} Moves in ${parsedMap.keys.size} Move Types!")
         return parsedMap
     }
     private fun parseMoveMap(pokemonMoveList:List<PokemonMoveset>):Map<String,List<PokemonMoveset>>{
@@ -644,10 +642,10 @@ class PokemonDataGenerator() {
             }
         }
         else{
-            val pokemonDataMap: Map<String,List<PokemonClass>> = PokemonDataGenerator().generatePokemonFromCSVV2()
-            val pokemonMoveData: Map<String,List<PokemonMoveset>> = PokemonDataGenerator().generateMovesFromCSV()
             var x = 0
             while (x < pokemonAmount){
+                val pokemonDataMap: Map<String,List<PokemonClass>> = PokemonDataGenerator().generatePokemonFromCSVV2()
+                val pokemonMoveData: Map<String,List<PokemonMoveset>> = PokemonDataGenerator().generateMovesFromCSV()
                 val randType = TYPE_INDEX.random()
                 val createdPokemon = pokemonDataMap.getValue(randType)[(0..pokemonDataMap.getValue(randType).size - 1).random()].deepCopy()
                 while (createdPokemon.pokemonMoveList.size() < movesAmount){
