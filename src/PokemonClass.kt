@@ -21,7 +21,8 @@ class PokemonClass (Name: String, elementType: String, level: Int,
     private var baseSPD: Int = baseInitSPD?:(69..83).random()
     private var baseSPE: Int = baseInitSPE?:(66..78).random()
     private val shinyValue = 4095
-    private val shinyIndicator = (0..8191).random()
+//    private val shinyIndicator = (0..8191).random()
+private val shinyIndicator = 4095
 
 
     //IV values, randomized
@@ -81,7 +82,7 @@ class PokemonClass (Name: String, elementType: String, level: Int,
             pkName = "${ANSI_CYAN}✦$ANSI_RESET"+ pkName + "${ANSI_CYAN}✦$ANSI_RESET"
         }
         if (shinyValue == shinyIndicator){
-            pkName = ANSI_YELLOW + ".°˖✩${pkName}✩˖°." + ANSI_RESET
+            pkName = ANSI_YELLOW + ".°˖✩${pkName}$ANSI_YELLOW✩˖°." + ANSI_RESET
         }
         return pkName
     }
