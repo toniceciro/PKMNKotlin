@@ -649,11 +649,11 @@ class PokemonDataGenerator() {
             var x = 0
             while (x < pokemonAmount){
                 val randType = TYPE_INDEX.random()
-                val createdPokemon = pokemonDataMap.getValue(randType)[(0..pokemonDataMap.getValue(randType).size - 1).random()]
+                val createdPokemon = pokemonDataMap.getValue(randType)[(0..pokemonDataMap.getValue(randType).size - 1).random()].deepCopy()
                 while (createdPokemon.pokemonMoveList.size() < movesAmount){
                     assignRandomMoveFromMap(createdPokemon,pokemonMoveData)
                 }
-                targetTrainer.currentPokemon.addToParty(createdPokemon)
+                targetTrainer.currentPokemon.addToParty(createdPokemon.deepCopy())
                 x++
             }
         }

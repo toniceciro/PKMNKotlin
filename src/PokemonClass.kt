@@ -1,4 +1,5 @@
 import kotlin.math.roundToInt
+import com.google.gson.*
 private val ANSI_RESET = "\u001B[0m";
 private val ANSI_BLACK = "\u001B[30m";
 private val ANSI_RED = "\u001B[31m";
@@ -119,6 +120,14 @@ class PokemonClass (Name: String, elementType: String, level: Int,
             x++
         }
         return preparedString
+    }
+    fun deepCopy():PokemonClass {
+        val JSON = Gson().toJson(this)
+        return Gson().fromJson(JSON, PokemonClass::class.java)
+    }
+    fun serializeToJSON():String {
+        val JSON = Gson().toJson(this)
+        return JSON
     }
 }
 data class pokemonHealthValues(var currentHP: Int, var maxHP: Int)
